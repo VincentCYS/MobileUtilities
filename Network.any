@@ -1,5 +1,6 @@
 var workspace = require("ANYWorkspace");
 var __rN = require("ReactNative");
+var Base64 = require("Base64");
 module.exports=function(d,t){
     /* d=self, t=hooks */
     var k = workspace.value(d,d.__props.url) || "";

@@ -16,6 +16,7 @@ module.exports  = function(d, t) {
             }[(d.__props.format||"querystring").toLowerCase()]
         }
     };
+    console.log("device, check url:", k, g);
     if (0 < k.length) {
         /*
         var n=workspace.path(d);

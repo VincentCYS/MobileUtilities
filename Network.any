@@ -18,24 +18,64 @@ module.exports  = function(d, t) {
     if (0 < k.length) {
         /* bluetooth */
         if(/^ble?:\/\//i.test(k)) {
-            
             // get splitted path
-            var uri = (k.substring(6).split('/') || []).slice(1), args = {};
+            var uri = k.substring(6).split('/') || [], args = {};
+            // get device id
+            var deviceId = uri.shift();
             // get args
             while (uri.length > 0) args[uri.shift()] = uri.shift();
-
-            console.log("device, check url:", uri, g);
-
-            /*
+            // setup bluetooth variables
             var u = new __rN.NativeEventEmitter(__rN.NativeModules.BleManager),
+                w = function(d) {
+                    console.log("[ble] show data ", d);
+                },
+                z = function() {
+                    console.log("[ble] check url:", deviceId, args, g);
+                },
                 x = function() {
-
+                    // no specified device
+                    if (!deviceId) {
+                        // start scanning
+                        BLE.scan([], 8, !0);
+                    } else {
+                        // connect to specified device
+                        z();
+                    }
                 };
-
+            // start
             global.ble? x() : BLE.start({ showAlert: !1 }).then(function() {
-
+                global.ble = {};
+                console.log("[ble] started.");
+                // device disconnection handler
+                u.addListener("BleManagerDisconnectPeripheral", function(a) {
+                    console.log("device: ",a,"disconnected");
+                });
+                // scanning
+                u.addListener("BleManagerDiscoverPeripheral", function(device) {
+                    // setup device
+                    device = device || {};
+                    // valid device
+                    "undefined" != typeof device.name && (v[device.id] = device);
+                });
+                // add stop handler
+                u.addListener("BleManagerStopScan",function() {
+                    // setup device container
+                    var devices = [];
+                    // append discovered device
+                    for (var d in v) devices.push(v[d]);
+                    // callback
+                    w(devices);
+                });
+                // received data handler
+                u.addListener('BleManagerDidUpdateValueForCharacteristic', function(body, peripheral, characteristic, service) {
+                    var data = "";
+                    // convert byte array to string
+                    for (var i = 0; i < body.length; i++) data += String.fromCharCode(parseInt(body[i], 2));
+                    console.log("received data from ble device:", data);
+                });
+                // setup bluetooth
+                x();
             });
-            */
         }
     }
 };

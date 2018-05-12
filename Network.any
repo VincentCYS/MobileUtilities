@@ -1,6 +1,7 @@
 var workspace   = require("ANYWorkspace");
 var __rN        = require("ReactNative");
 var Base64      = require("Base64");
+var BLE         = require("BLE");
 /* d:instance, t:callbacks */
 module.exports  = function(d, t) {
     /* d=self, t=hooks */
@@ -52,7 +53,7 @@ module.exports  = function(d, t) {
             var u = new __rN.NativeEventEmitter(__rN.NativeModules.BleManager),
                 v = {},
                 w = function(e) {
-                    for(e&&workspace.store(e,d.__props.alias);0<--l&&!f;)"undefined"!=typeof n[l].__instance&&(f=n[l].__instance);f?f.setState(f.state,function(){t.succeeded&&t.succeeded()}):t.succeeded&&t.succeeded(e)
+                    //for(e&&workspace.store(e,d.__props.alias);0<--l&&!f;)"undefined"!=typeof n[l].__instance&&(f=n[l].__instance);f?f.setState(f.state,function(){t.succeeded&&t.succeeded()}):t.succeeded&&t.succeeded(e)
                 },
                 z = function(deviceId) {
                     // disconnect

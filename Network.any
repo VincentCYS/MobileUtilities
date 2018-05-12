@@ -14,5 +14,28 @@ module.exports  = function(d, t) {
             }[(d.__props.format||"querystring").toLowerCase()]
         }
     };
-    console.log("device, check url:", k, g);
+    // got url
+    if (0 < k.length) {
+        /* bluetooth */
+        if(/^ble?:\/\//i.test(k)) {
+            
+            // get splitted path
+            var uri = (k.substring(6).split('/') || []).slice(1), args = {};
+            // get args
+            while (uri.length > 0) args[uri.shift()] = uri.shift();
+
+            console.log("device, check url:", uri, g);
+
+            /*
+            var u = new __rN.NativeEventEmitter(__rN.NativeModules.BleManager),
+                x = function() {
+
+                };
+
+            global.ble? x() : BLE.start({ showAlert: !1 }).then(function() {
+
+            });
+            */
+        }
+    }
 };

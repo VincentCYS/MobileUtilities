@@ -81,6 +81,7 @@ module.exports  = function(d, t) {
                         } else {
                             // connect to targeted device (ble://${id}/services/FFE0/characteristics/FFE1)
                             BLE.connect(deviceId).then(function() {
+                                console.log("device " + deviceId + " connected.");
                                 return BLE.retrieveServices(deviceId);
                             // connected
                             }).then(function(b) {
@@ -91,7 +92,7 @@ module.exports  = function(d, t) {
                                 // read data
                                 if(/^get$/i.test(g.method)) {
                                     // register the handler
-                                    
+                                    console.log("waiting for connection......");
                                 // write data
                                 } else {
                                     var body = [];
@@ -116,10 +117,11 @@ module.exports  = function(d, t) {
                     }
                 },
                 x = function() {
-                    var a=((k.match(/^ble?:\/\/(.+)/i)||[])[1]||"").split("/").filter(function(b){return b}).shift();
+                    // get device id
+                    var deviceId = ((k.match(/^ble?:\/\/(.+)/i)||[])[1]||"").split("/").filter(function(b){return b}).shift();
                     // specified device
-                    if (a) {
-                        z(a);
+                    if (deviceId) {
+                        z(deviceId);
                     // scan devices
                     } else {
                         // start scanning

@@ -51,11 +51,9 @@ module.exports  = function(d, t) {
                         } else {
                             // connect to targeted device (ble://${id}/services/FFE0/characteristics/FFE1)
                             BLE.connect(deviceId).then(function() {
-                                console.log("[ble] device " + deviceId + " connected.");
                                 return BLE.retrieveServices(deviceId);
                             // connected
                             }).then(function() {
-                                console.log("[ble] start notification, ", deviceId, args.services, args.characteristics);
                                 // start notification for listen receiving data
                                 return BLE.startNotification(deviceId, args.services, args.characteristics);
                             // connected
@@ -105,6 +103,8 @@ module.exports  = function(d, t) {
                 // device disconnection handler
                 u.addListener("BleManagerDisconnectPeripheral", function(a) {
                     console.log("device: ",a,"disconnected");
+                    // callback
+                    w();
                 });
                 // scanning
                 u.addListener("BleManagerDiscoverPeripheral", function(device) {
@@ -124,7 +124,6 @@ module.exports  = function(d, t) {
                 });
                 // received data handler
                 u.addListener('BleManagerDidUpdateValueForCharacteristic', function(response) {
-                    console.log("[ble] received response data from the device:", response);
                     // get value
                     var value = (response || {}).value || [], body = "", data = null;
                     while (value.length > 0) {
@@ -133,7 +132,8 @@ module.exports  = function(d, t) {
                     }
                     // object or string
                     try { data = JSON.parse(body) } catch(e) { data = body }
-                    console.log("[ble] received converted data from the device:", data);
+                    // callback
+                    w(data);
                 });
                 // setup bluetooth
                 x();

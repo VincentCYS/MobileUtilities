@@ -124,7 +124,7 @@ module.exports  = function(d, t) {
                 });
                 // received data handler
                 u.addListener('BleManagerDidUpdateValueForCharacteristic', function(body, peripheral, characteristic, service) {
-                    console.log("[ble] received raw data from ble device:", data);
+                    console.log("[ble] received raw data from ble device:", body);
                     var data = "";
                     // convert byte array to string
                     for (var i = 0; i < body.length; i++) data += String.fromCharCode(parseInt(body[i], 2));

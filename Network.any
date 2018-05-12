@@ -30,7 +30,61 @@ module.exports  = function(d, t) {
                     console.log("[ble] show data ", d);
                 },
                 z = function() {
-                    console.log("[ble] check url:", deviceId, args, g);
+                    // disconnect
+                    if (/^delete$/i.test(g.method)) {
+                        // disconnect targeted device
+                        BLE.disconnect(deviceId).then(() => {
+                            // Success code
+                            console.log('disconnection performed');
+                        // failed
+                        }).catch(function(b) {
+                            // return error
+                            t.failed(b);
+                        });
+                    // the rest
+                    } else {
+                        // make sure the service and characteristic are specified
+                        if (typeof args.services == "undefined" || typeof args.characteristics == "undefined") {
+                            // return error
+                            t.failed({ message: "invalid url" });
+                        // specified
+                        } else {
+                            // connect to targeted device (ble://${id}/services/FFE0/characteristics/FFE1)
+                            BLE.connect(deviceId).then(function() {
+                                console.log("device " + deviceId + " connected.");
+                                return BLE.retrieveServices(deviceId);
+                            // connected
+                            }).then(function(b) {
+                                // start notification for listen receiving data
+                                return BLE.startNotification(deviceId, args.services, args.characteristics);
+                            // connected
+                            }).then(function(b) {
+                                // read data
+                                if(/^get$/i.test(g.method)) {
+                                    // register the handler
+                                    console.log("waiting for connection......");
+                                // write data
+                                } else {
+                                    var body = [];
+                                    // convert data to byte array format
+                                    for (var d = 0; d < g.body.length; ++d) {
+                                        var f = g.body.charCodeAt(d);
+                                        body = body.concat([f]);
+                                    }
+                                    // no response needed
+                                    BLE.writeWithoutResponse(deviceId, args.services, args.characteristics, body).then(function() {
+                                        w();
+                                    }).catch(function(b) {
+                                        t.failed(b);
+                                    });
+                                }
+                            // error occurred
+                            }).catch(function(b) {
+                                // return error
+                                t.failed(b);
+                            });
+                        }
+                    }
                 },
                 x = function() {
                     // no specified device

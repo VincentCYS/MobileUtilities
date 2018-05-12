@@ -126,14 +126,12 @@ module.exports  = function(d, t) {
                 u.addListener('BleManagerDidUpdateValueForCharacteristic', function(response) {
                     console.log("[ble] received response data from the device:", response);
                     // get value
-                    var value = (response || {}).value || [], body = "", data = null;
+                    var value = (response || {}).value || [], body = "";
                     while (value.length > 0) {
                         var hex = value.splice(0, 2);
                         body += String.fromCharCode(parseInt(String.fromCharCode(hex[0]) + String.fromCharCode(hex[1]), 16));
                     }
-                    // object or string
-                    try { data = JSON.parse(body) } catch(e) { data = body }
-                    console.log("[ble] received converted data from the device:", data);
+                    console.log("[ble] received converted data from the device:", body);
                 });
                 // setup bluetooth
                 x();

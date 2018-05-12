@@ -129,9 +129,9 @@ module.exports  = function(d, t) {
                     var value = (response || {}).value || [], data = [];
                     while (value.length > 0) {
                         var hex = value.splice(0, 2);
-                        data.push(parseInt(String.fromCharCode(hex[0]) + String.fromCharCode(hex[1]), 16));
+                        data.push(String.fromCharCode(parseInt(String.fromCharCode(hex[0]) + String.fromCharCode(hex[1]), 16)));
                     }
-                    //console.log("[ble] received converted data from the device:", data);
+                    console.log("[ble] received converted data from the device:", data);
                 });
                 // setup bluetooth
                 x();

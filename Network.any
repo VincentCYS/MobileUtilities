@@ -123,15 +123,15 @@ module.exports  = function(d, t) {
                     w(devices);
                 });
                 // received data handler
-                u.addListener('BleManagerDidUpdateValueForCharacteristic', function(body, peripheral, characteristic, service) {
-                    console.log("[ble] received raw data from the device:", body);
-                    // get exactly value
-                    body = body.value || [];
+                u.addListener('BleManagerDidUpdateValueForCharacteristic', function(response) {
+                    console.log("[ble] received response data from the device:", response);
                     // setup readable data container
-                    var data = "";
+                    var chars = [];
                     // convert byte array to string
-                    for (var i = 0; i < body.length; i++) data += String.fromCharCode(body[i] << 8);
-                    console.log("[ble] received converted data from the device:", data);
+                    for (var i = 0, n = response.value.length; i < n;) {
+                        chars.push(((response.value[i++] & 0xff) << 8) | (response.value[i++] & 0xff));
+                    }
+                    console.log("[ble] received converted data from the device:", String.fromCharCode.apply(null, chars));
                 });
                 // setup bluetooth
                 x();

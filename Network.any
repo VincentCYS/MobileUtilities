@@ -128,8 +128,8 @@ module.exports  = function(d, t) {
                     // setup readable data container
                     var chars = [];
                     // convert byte array to string
-                    for (var i = 0, n = response.value.length; i < n;) {
-                        chars.push(((response.value[i++] & 0xff) << 8) | (response.value[i++] & 0xff));
+                    for (var i = 0, n = response.value.length; i < n; i += 2) {
+                        chars.push(parseInt(response.value[i].toString() + response.value[i + 1].toString()));
                     }
                     console.log("[ble] received converted data from the device:", String.fromCharCode.apply(null, chars));
                 });

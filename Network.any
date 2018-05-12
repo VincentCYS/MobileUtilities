@@ -51,7 +51,7 @@ module.exports  = function(d, t) {
                         } else {
                             // connect to targeted device (ble://${id}/services/FFE0/characteristics/FFE1)
                             BLE.connect(deviceId).then(function() {
-                                console.log("device " + deviceId + " connected.");
+                                console.log("[ble] device " + deviceId + " connected.");
                                 return BLE.retrieveServices(deviceId);
                             // connected
                             }).then(function(b) {
@@ -62,9 +62,10 @@ module.exports  = function(d, t) {
                                 // read data
                                 if(/^get$/i.test(g.method)) {
                                     // register the handler
-                                    console.log("waiting for connection......");
+                                    console.log("[ble] waiting for connection......");
                                 // write data
                                 } else {
+                                    // setup form data container
                                     var body = [];
                                     // convert data to byte array format
                                     for (var d = 0; d < g.body.length; ++d) {

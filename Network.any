@@ -54,11 +54,12 @@ module.exports  = function(d, t) {
                                 console.log("[ble] device " + deviceId + " connected.");
                                 return BLE.retrieveServices(deviceId);
                             // connected
-                            }).then(function(b) {
+                            }).then(function() {
+                                console.log("[ble] start notification, ", deviceId, args.services, args.characteristics);
                                 // start notification for listen receiving data
                                 return BLE.startNotification(deviceId, args.services, args.characteristics);
                             // connected
-                            }).then(function(b) {
+                            }).then(function() {
                                 // read data
                                 if(/^get$/i.test(g.method)) {
                                     // register the handler

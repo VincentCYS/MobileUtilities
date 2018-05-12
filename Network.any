@@ -140,6 +140,7 @@ module.exports  = function(d, t) {
                     var devices = [];
                     // append discovered device
                     for (var d in v) devices.push(v[d]);
+                    console.log("devices: ", devices);
                     // callback
                     w(devices);
                 });

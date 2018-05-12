@@ -4,7 +4,8 @@ var Base64      = require("Base64");
 /* d:instance, t:callbacks */
 module.exports  = function(d, t) {
     /* d=self, t=hooks */
-    var k = workspace.value(d,d.__props.url) || "";
+    //var k = workspace.value(d,d.__props.url) || "";
+    var k = d.__props.url || "";
     var g = {
         method:{READ:"GET",CREATE:"POST",UPDATE:"PUT",DELETE:"DELETE"}[(d.__props.type||"GET").toUpperCase()],
         headers:{
@@ -15,14 +16,16 @@ module.exports  = function(d, t) {
         }
     };
     if (0 < k.length) {
+        /*
         var n=workspace.path(d);
         var l=n.length;
         var f=null;
         var m=d.__props.authMode||"Basic";
         var a=[workspace.value(d,d.__props.authU)||"",workspace.value(d,d.__props.authP)||""].filter(function(e){return e});
         0<a.length&&(g.headers.Authorization=m+" "+(1<a.length?Base64.encode(a.join(":")):a[0]));
-        
+        */
         /* process form data */
+        /*
         if((a=workspace.value(d,d.__props.formData)||"")&&0<a.length){
             if("application/json"==g.headers["Content-Type"]){
                 m=null;
@@ -34,6 +37,7 @@ module.exports  = function(d, t) {
             }
             0<a.length&&(!/^wss?:\/\//i.test(k)&&/^(get|delete)$/i.test(g.method)?c+=(0<=c.indexOf("?")?"&":"?")+a:g.body=a)
         }
+        */
         /* websocket */
         if (/^wss?:\/\//i.test(k)) {
             var q=Base64.encode(k),r=function(){
@@ -160,9 +164,11 @@ module.exports  = function(d, t) {
             /* info */
         /* http */
         } else {
+            /*
             fetch(k,g).then(function(a){
                 var b=null,e=t[a.ok?"succeeded":"failed"];try{b=JSON.parse(a._bodyInit)}catch(B){b=null}b||(b={content:a._bodyInit});for(workspace.store(b,d.__props.alias);0<--l&&!f;)"undefined"!=typeof n[l].__instance&&(f=n[l].__instance);f?f.setState(f.state,function(){e&&e()}):e&&e(b)
             });
+            */
         }
     }
 };

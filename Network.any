@@ -73,6 +73,7 @@ module.exports  = function(d, t) {
                         var path = (k.substring(6).split('/') || []).slice(1), args = {};
                         // get args
                         while (path.length > 0) args[path.shift()] = args.shift();
+                        console.log("device, check args:", args);
                         // make sure the service and characteristic are specified
                         if (typeof args.services == "undefined" || typeof args.characteristics == "undefined") {
                             // return error
@@ -128,7 +129,7 @@ module.exports  = function(d, t) {
                         BLE.scan([], 5, !0);
                     }
                 };
-            global.ble? x() : BLE.start({showAlert:!1}).then(function() {
+            global.ble? x() : BLE.start({ showAlert: !1 }).then(function() {
                 global.ble = {};
                 // device disconnection handler
                 u.addListener("BleManagerDisconnectPeripheral", function(a) {

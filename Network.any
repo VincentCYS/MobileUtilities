@@ -129,9 +129,12 @@ module.exports  = function(d, t) {
                     clearTimeout(receivingTimer);
                     receivingTimer = setTimeout(function() {
                         receivingTimer = clearTimeout(receivingTimer);
-                        console.log("[ble] received data:", receivingBuf);
+                        // setup data container
+                        var data = null;
+                        // parse received data
+                        try { data = JSON.parse(receivingBuf) } catch(e) { data = receivingBuf }
                         // callback
-                        w({});
+                        w(data);
                         receivingBuf = "";
                     }, 750);
                     // get value

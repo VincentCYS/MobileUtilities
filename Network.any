@@ -66,7 +66,7 @@ module.exports  = function(d, t) {
                                     // setup handler container
                                     global.ble[handlerName] = global.ble[handlerName] || [];
                                     // register the handler
-                                    global.ble[handlerName].push(t.succeeded);
+                                    global.ble[handlerName].push(w);
                                 // write data
                                 } else {
                                     // setup form data container

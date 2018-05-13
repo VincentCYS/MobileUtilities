@@ -25,11 +25,11 @@ module.exports  = function(d, t) {
             // get args
             while (uri.length > 0) args[uri.shift()] = uri.shift();
             // setup bluetooth variables
-            var u = new __rN.NativeEventEmitter(__rN.NativeModules.BleManager),
-                v = {},
-                w = function(d) {
+            var w = function(d) {
                     console.log("[ble] show data ", d);
                 },
+                u = new __rN.NativeEventEmitter(__rN.NativeModules.BleManager),
+                v = {},
                 z = function() {
                     // disconnect
                     if (/^delete$/i.test(g.method)) {
@@ -64,9 +64,9 @@ module.exports  = function(d, t) {
                                     // get handler name
                                     var handlerName = [deviceId, args.services, args.characteristics].join('.');
                                     // setup handler container
-                                    global.ble[handlerName] = global.ble[handlerName] || [];
+                                    global.ble.read[handlerName] = global.ble.read[handlerName] || [];
                                     // register the handler
-                                    global.ble[handlerName].push(w);
+                                    global.ble.read[handlerName].push(w);
                                 // write data
                                 } else {
                                     // setup form data container
@@ -103,9 +103,8 @@ module.exports  = function(d, t) {
                 };
             // start
             global.ble ? x() : BLE.start({ showAlert: !1 }).then(function() {
-                global.ble = {};
+                global.ble = { read: {} };
                 var receivingBuf = "", receivingTimer = null;
-                console.log("[ble] started.");
                 // device disconnection handler
                 u.addListener("BleManagerDisconnectPeripheral", function(a) {
                     console.log("device: ",a,"disconnected");
@@ -137,10 +136,11 @@ module.exports  = function(d, t) {
                         var data = null;
                         // parse received data
                         try { data = JSON.parse(receivingBuf) } catch(e) { data = receivingBuf }
+                        console.log("[ble] received data: ", data);
                         // get handler name
                         var handlerName = [response.peripheral, response.service, response.characteristic].join('.');
                         // callback
-                        for (var idx in global.ble[handlerName]) global.ble[handlerName][idx](data);
+                        for (var idx in (global.ble.read[handlerName] || [])) global.ble.read[handlerName][idx](data);
                         // clear buffer
                         receivingBuf = "";
                     }, 750);

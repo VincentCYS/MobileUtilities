@@ -26,6 +26,7 @@ module.exports  = function(d, t) {
             while (uri.length > 0) args[uri.shift()] = uri.shift();
             // setup bluetooth variables
             var u = new __rN.NativeEventEmitter(__rN.NativeModules.BleManager),
+                v = {},
                 w = function(d) {
                     console.log("[ble] show data ", d);
                 },

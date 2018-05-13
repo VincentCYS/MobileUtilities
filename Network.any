@@ -98,8 +98,9 @@ module.exports  = function(d, t) {
                     }
                 };
             // start
-            global.ble? x() : BLE.start({ showAlert: !1 }).then(function() {
+            global.ble ? x() : BLE.start({ showAlert: !1 }).then(function() {
                 global.ble = {};
+                var receivingBuf = "", receivingTimer = null;
                 console.log("[ble] started.");
                 // device disconnection handler
                 u.addListener("BleManagerDisconnectPeripheral", function(a) {
@@ -125,16 +126,21 @@ module.exports  = function(d, t) {
                 });
                 // received data handler
                 u.addListener('BleManagerDidUpdateValueForCharacteristic', function(response) {
+                    clearTimeout(receivingTimer);
+                    receivingTimer = setTimeout(function() {
+                        receivingTimer = clearTimeout(receivingTimer);
+                        console.log("[ble] received data:", receivingBuf);
+                        // callback
+                        w({});
+                        receivingBuf = "";
+                    }, 750);
                     // get value
-                    var value = (response || {}).value || [], body = "", data = null;
+                    var value = (response || {}).value || [];
+                    // parse value
                     while (value.length > 0) {
                         var hex = value.splice(0, 2);
-                        body += String.fromCharCode(parseInt(String.fromCharCode(hex[0]) + String.fromCharCode(hex[1]), 16));
+                        receivingBuf += String.fromCharCode(parseInt(String.fromCharCode(hex[0]) + String.fromCharCode(hex[1]), 16));
                     }
-                    // object or string
-                    try { data = JSON.parse(body) } catch(e) { data = body }
-                    // callback
-                    w(data);
                 });
                 // setup bluetooth
                 x();

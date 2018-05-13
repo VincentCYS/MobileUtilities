@@ -61,8 +61,12 @@ module.exports  = function(d, t) {
                             }).then(function() {
                                 // read data
                                 if(/^get$/i.test(g.method)) {
+                                    // get handler name
+                                    var handlerName = [deviceId, args.services, args.characteristics].join('.');
+                                    // setup handler container
+                                    global.ble[handlerName] = global.ble[handlerName] || [];
                                     // register the handler
-                                    console.log("[ble] waiting for connection......");
+                                    global.ble[handlerName].push(t.succeeded);
                                 // write data
                                 } else {
                                     // setup form data container
@@ -133,8 +137,11 @@ module.exports  = function(d, t) {
                         var data = null;
                         // parse received data
                         try { data = JSON.parse(receivingBuf) } catch(e) { data = receivingBuf }
+                        console.log("[ble] got ble response:", response);
+                        //[deviceId, args.services, args.characteristics].join('.')
                         // callback
                         w(data);
+                        // clear buffer
                         receivingBuf = "";
                     }, 750);
                     // get value

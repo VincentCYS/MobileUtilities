@@ -137,10 +137,10 @@ module.exports  = function(d, t) {
                         var data = null;
                         // parse received data
                         try { data = JSON.parse(receivingBuf) } catch(e) { data = receivingBuf }
-                        console.log("[ble] got ble response:", response);
-                        //[deviceId, args.services, args.characteristics].join('.')
+                        // get handler name
+                        var handlerName = [response.peripheral, response.service, response.characteristic].join('.');
                         // callback
-                        w(data);
+                        for (var idx in global.ble[handlerName]) global.ble[handlerName][idx](data);
                         // clear buffer
                         receivingBuf = "";
                     }, 750);

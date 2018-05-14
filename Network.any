@@ -174,7 +174,7 @@ module.exports  = function(d, t) {
                 // save data to last instance
                 var inst = data.instances[data.instances.length - 1];
                 // make sure there is at least one instance
-                if (inst && (d.__props || {}).alias) inst.__data[d.__props.alias] = b;
+                if (inst && (d.__props || {}).alias) workspace.tree[inst.__id].__data[d.__props.alias] = b;
                 // callback type
                 var cbType = a.status && a.status <= 399 ? 'succeeded' : 'failed';
                 // callback

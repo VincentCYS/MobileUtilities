@@ -1,7 +1,7 @@
 var workspace   = require("ANYWorkspace");
 var __rN        = require("ReactNative");
 var BLE         = require("BLE");
-/* d:config, t:callbacks
+/* d:config, t:callbacks */
 module.exports  = function(g, t) {
     var k = g.url || "";
     // need url
@@ -14,7 +14,139 @@ module.exports  = function(g, t) {
 
     // bluetooth
     } else if (/^ble:\/\//i.test(k)) {
-        
+        // get splitted path
+        var uri = k.substring(6).split('/') || [], args = {};
+        // get device id
+        var deviceId = uri.shift();
+        // get args
+        while (uri.length > 0) args[uri.shift()] = uri.shift();
+        // setup bluetooth variables
+        var u = new __rN.NativeEventEmitter(__rN.NativeModules.BleManager),
+            v = {},
+            z = function() {
+                // disconnect
+                if (/^delete$/i.test(g.method)) {
+                    // disconnect targeted device
+                    BLE.disconnect(deviceId).then(() => {
+                        // Success code
+                        console.log('disconnection performed');
+                    // failed
+                    }).catch(function(b) {
+                        // return error
+                        t.failed && t.failed(b);
+                    });
+                // the rest
+                } else {
+                    // make sure the service and characteristic are specified
+                    if (typeof args.services == "undefined" || typeof args.characteristics == "undefined") {
+                        // return error
+                        t.failed && t.failed({ message: "invalid url" });
+                    // specified
+                    } else {
+                        // connect to targeted device (ble://${id}/services/FFE0/characteristics/FFE1)
+                        BLE.connect(deviceId).then(function() {
+                            return BLE.retrieveServices(deviceId);
+                        // connected
+                        }).then(function() {
+                            // start notification for listen receiving data
+                            return BLE.startNotification(deviceId, args.services, args.characteristics);
+                        // connected
+                        }).then(function() {
+                            // read data
+                            if(/^get$/i.test(g.method)) {
+                                // get handler name
+                                var handlerName = [deviceId, args.services, args.characteristics].join('.');
+                                // setup handler container
+                                global.ble.read[handlerName] = global.ble.read[handlerName] || [];
+                                // register the handler
+                                global.ble.read[handlerName].push(t.succeeded);
+                            // write data
+                            } else {
+                                // setup form data container
+                                var body = [];
+                                // convert data to byte array format
+                                for (var d = 0; d < g.body.length; ++d) {
+                                    var f = g.body.charCodeAt(d);
+                                    body = body.concat([f]);
+                                }
+                                // no response needed
+                                BLE.writeWithoutResponse(deviceId, args.services, args.characteristics, body).then(function() {
+                                    t.succeeded && t.succeeded();
+                                }).catch(function(b) {
+                                    t.failed && t.failed(b);
+                                });
+                            }
+                        // error occurred
+                        }).catch(function(b) {
+                            // return error
+                            t.failed && t.failed(b);
+                        });
+                    }
+                }
+            },
+            x = function() {
+                // no specified device
+                if (!deviceId) {
+                    // start scanning
+                    BLE.scan([], 8, !0);
+                } else {
+                    // connect to specified device
+                    z();
+                }
+            };
+        // start
+        global.ble ? x() : BLE.start({ showAlert: !1 }).then(function() {
+            global.ble = { read: {} };
+            var receivingBuf = "", receivingTimer = null;
+            // device disconnection handler
+            u.addListener("BleManagerDisconnectPeripheral", function(a) {
+                console.log("device: ",a,"disconnected");
+                // callback
+                t.succeeded && t.succeeded(a);
+            });
+            // scanning
+            u.addListener("BleManagerDiscoverPeripheral", function(device) {
+                // setup device
+                device = device || {};
+                // valid device
+                "undefined" != typeof device.name && (v[device.id] = device);
+            });
+            // add stop handler
+            u.addListener("BleManagerStopScan",function() {
+                // setup device container
+                var devices = [];
+                // append discovered device
+                for (var d in v) devices.push(v[d]);
+                // callback
+                t.succeeded && t.succeeded(devices);
+            });
+            // received data handler
+            u.addListener('BleManagerDidUpdateValueForCharacteristic', function(response) {
+                clearTimeout(receivingTimer);
+                receivingTimer = setTimeout(function() {
+                    receivingTimer = clearTimeout(receivingTimer);
+                    // setup data container
+                    var data = null;
+                    // parse received data
+                    try { data = JSON.parse(receivingBuf) } catch(e) { data = receivingBuf }
+                    // get handler name
+                    var handlerName = [response.peripheral, response.service, response.characteristic].join('.');
+                    // callback
+                    for (var idx in (global.ble.read[handlerName] || [])) global.ble.read[handlerName][idx](data);
+                    // clear buffer
+                    receivingBuf = "";
+                }, 750);
+                // get value
+                var value = (response || {}).value || [];
+                // parse value
+                while (value.length > 0) {
+                    var hex = value.splice(0, 2);
+                    receivingBuf += String.fromCharCode(parseInt(String.fromCharCode(hex[0]) + String.fromCharCode(hex[1]), 16));
+                }
+            });
+            // setup bluetooth
+            x();
+        });
      // web socket
     } else if (/^wss?:\/\//i.test(k)) {
         
@@ -22,5 +154,14 @@ module.exports  = function(g, t) {
     } else {
         // remove url from config
         delete g.url;
+        // send request to related server
+        fetch(k, g).then(function(a) {
+            b = null;
+            try { b = JSON.parse(a._bodyInit) } catch(b) { b = a._bodyInit }
+            // callback type
+            var cbType = a.status && a.status <= 399 ? 'succeeded' : 'failed';
+            // callback
+            t[cbType] && t[cbType](b);
+        });
     }
 };

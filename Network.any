@@ -6,18 +6,23 @@ var BLE         = require("BLE");
 module.exports  = function(d, t) {
     var k = d.__props.url || "";
     var g = {
-        method:{READ:"GET",CREATE:"POST",UPDATE:"PUT",DELETE:"DELETE"}[(d.__props.type||"GET").toUpperCase()],
-        headers:{
+        method  : {
+            READ    : "GET",
+            CREATE  : "POST",
+            UPDATE  : "PUT",
+            DELETE  : "DELETE"
+        }[(d.__props.type||"GET").toUpperCase()],
+        headers : {
             "Content-Type":{
-                json:"application/json",
-                querystring:"application/x-www-form-urlencoded"
+                json        : "application/json",
+                querystring : "application/x-www-form-urlencoded"
             }[(d.__props.format||"querystring").toLowerCase()]
         }
     };
     // got url
     if (0 < k.length) {
-        /* bluetooth */
-        if(/^ble?:\/\//i.test(k)) {
+        // bluetooth
+        if (/^ble:\/\//i.test(k)) {
             // get splitted path
             var uri = k.substring(6).split('/') || [], args = {};
             // get device id
@@ -154,6 +159,18 @@ module.exports  = function(d, t) {
                 });
                 // setup bluetooth
                 x();
+            });
+        // web socket
+        } else if (/^wss?:\/\//i.test(k)) {
+
+        // http by default
+        } else {
+            // send request to related server
+            fetch(k, g).then(function(a) {
+                b = null;
+                try { b = JSON.parse(a._bodyInit) } catch(b) { b = a._bodyInit }
+
+                console.log("fetch response: ", b);
             });
         }
     }

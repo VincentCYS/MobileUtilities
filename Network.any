@@ -169,8 +169,14 @@ module.exports  = function(d, t) {
             fetch(k, g).then(function(a) {
                 b = null;
                 try { b = JSON.parse(a._bodyInit) } catch(b) { b = a._bodyInit }
-
-                console.log("fetch response: ", b);
+                // get data info
+                var data = workspace.data(d);
+                // save data to last instance
+                var inst = data.instances[data.instances.length - 1];
+                // make sure there is at least one instance
+                if (inst && (d.__props || {}).alias) inst.__data[d.__props.alias] = b;
+                console.log("[network] response from server: ", a);
+                t.succeeded && t.succeeded();
             });
         }
     }

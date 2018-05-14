@@ -180,7 +180,7 @@ module.exports  = function(d, t) {
                 // callback
                 t[cbType] && t[cbType]();
                 // get views
-                var views = workspace.views[d.__id].views || [], view = views[views.length - 1];
+                var views = workspace.views[inst.__id].views || [], view = views[views.length - 1];
                 // reload view
                 view && view.setState({});
             });

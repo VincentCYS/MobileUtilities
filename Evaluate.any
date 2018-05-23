@@ -1,218 +1,213 @@
 module.exports  = function(str, data) {
     // setup result data container
     var result = null;
-    if (!(str || "").length) {
-        // no requirement
-        result = str;
-    } else {
-        // get expression queries
-        var eqs = (str||"").match(/\$\{[a-z0-9\._,%:\"\{\}\[\]\(\)=\*\/\^\+\-\? ]+\}/ig) || [];
-        // execute
-        for (var qI in eqs) {
-            // get query
-            var query = eqs[qI];
-            // get expression
-            var expression = query.substr(2, query.length - 3);
-            // setup variable data container
-            var vars = {};
-            // find objects and arrays
-            var objects = expression.match(/((^[a-z0-9]+$)|[a-z0-9]+(\.(\[[0-9,_]+\]|[a-z0-9_]+))+)/ig) || [];
-            // process objects / arrays
-            for (var oI in objects) {
-                // get object
-                var object = objects[oI];
-                // create alias
-                var alias = `~~${[qI, oI].join('~')}~~`;
-                // setup value container
-                var value = data;
-                // get args
-                var args = object.split('.');
-                // search values
-                while (value && args.length > 0) {
-                    // get key
-                    var key = args.shift();
-                    // is it an array?
-                    if (/^\[.*\]$/i.test(key)) {
-                        // setup an array for storing selected rows
-                        var arr = [];
-                        // get values
-                        var values = key.substr(1, key.length - 2).split(',').filter(n => n);
-                        // process values
-                        for (var valI in values) {
-                            // get index
-                            var idx = values[valI];
-                            // value exists
-                            if (typeof value[idx] != "undefined") {
-                                // append to array data container
-                                arr.push(value[idx]);
-                            }
+    // get expression queries
+    var eqs = (str||"").match(/\$\{[a-z0-9\._,%:\"\{\}\[\]\(\)=\*\/\^\+\-\? ]+\}/ig) || [];
+    // execute
+    for (var qI in eqs) {
+        // get query
+        var query = eqs[qI];
+        // get expression
+        var expression = query.substr(2, query.length - 3);
+        // setup variable data container
+        var vars = {};
+        // find objects and arrays
+        var objects = expression.match(/((^[a-z0-9]+$)|[a-z0-9]+(\.(\[[0-9,_]+\]|[a-z0-9_]+))+)/ig) || [];
+        // process objects / arrays
+        for (var oI in objects) {
+            // get object
+            var object = objects[oI];
+            // create alias
+            var alias = `~~${[qI, oI].join('~')}~~`;
+            // setup value container
+            var value = data;
+            // get args
+            var args = object.split('.');
+            // search values
+            while (value && args.length > 0) {
+                // get key
+                var key = args.shift();
+                // is it an array?
+                if (/^\[.*\]$/i.test(key)) {
+                    // setup an array for storing selected rows
+                    var arr = [];
+                    // get values
+                    var values = key.substr(1, key.length - 2).split(',').filter(n => n);
+                    // process values
+                    for (var valI in values) {
+                        // get index
+                        var idx = values[valI];
+                        // value exists
+                        if (typeof value[idx] != "undefined") {
+                            // append to array data container
+                            arr.push(value[idx]);
                         }
-                        // update value
-                        value = arr.length > 0 ? arr : null;
-                    // find column
-                    } else if (Array.isArray(value) && typeof value[key] == "undefined") {
-                        // get path
-                        var path = object.split('.');
-                        // update object name
-                        object = path.slice(0, path.length - args.length - 1).join('.');
-                    // general value
-                    } else {
-                        // get value directly
-                        value = value[key];
                     }
-                }
-                // is it an object?
-                if (typeof value == "object" && str != '${' + object + '}') {
-                    // the only object of the expression
-                    if (expression == object) {
-                        // change object to json string
-                        value = JSON.stringify(value);
-                    // general situation
-                    } else {
-                        // save variable
-                        vars[alias] = value;
-                        // use alias as value
-                        value = alias;
-                    }
-                }
-                // the only query?
-                if (str == '${' + object + '}') {
-                    // save as result directly
-                    result = value;
-                // is it array or object?
-                } else if (typeof value != "object") {
-                    // replace variable
-                    expression = expression.replace(object, value);
+                    // update value
+                    value = arr.length > 0 ? arr : null;
+                // find column
+                } else if (Array.isArray(value) && typeof value[key] == "undefined") {
+                    // get path
+                    var path = object.split('.');
+                    // update object name
+                    object = path.slice(0, path.length - args.length - 1).join('.');
+                // general value
+                } else {
+                    // get value directly
+                    value = value[key];
                 }
             }
-            // result is still empty
-            if (!result) {
-                // get all column queries
-                var cqs = expression.match(/(~~[0-9]+\~[0-9]+~~)(\.[a-z0-9_\+\-\*\/\^%]+)+/ig) || [];
-                // convert column queries to pure array
-                for (var cI in cqs) {
-                    // get column query
-                    cq = cqs[cI];
-                    // get path
-                    var path = cq.split('.');
-                    // create alias
-                    var alias = '~~' + [qI, 0, cI].join('~') + '~~';
-                    // get array
-                    var arr = vars[path.shift()] || [];
-                    // setup container
-                    vars[alias] = [];
-                    // process array
+            // is it an object?
+            if (typeof value == "object" && str != '${' + object + '}') {
+                // the only object of the expression
+                if (expression == object) {
+                    // change object to json string
+                    value = JSON.stringify(value);
+                // general situation
+                } else {
+                    // save variable
+                    vars[alias] = value;
+                    // use alias as value
+                    value = alias;
+                }
+            }
+            // the only query?
+            if (str == '${' + object + '}') {
+                // save as result directly
+                result = value;
+            // is it array or object?
+            } else if (typeof value != "object") {
+                // replace variable
+                expression = expression.replace(object, value);
+            }
+        }
+        // result is still empty
+        if (!result) {
+            // get all column queries
+            var cqs = expression.match(/(~~[0-9]+\~[0-9]+~~)(\.[a-z0-9_\+\-\*\/\^%]+)+/ig) || [];
+            // convert column queries to pure array
+            for (var cI in cqs) {
+                // get column query
+                cq = cqs[cI];
+                // get path
+                var path = cq.split('.');
+                // create alias
+                var alias = '~~' + [qI, 0, cI].join('~') + '~~';
+                // get array
+                var arr = vars[path.shift()] || [];
+                // setup container
+                vars[alias] = [];
+                // process array
+                for (var arrI in arr) {
+                    // get row
+                    var row = arr[arrI];
+                    // convert path to searching query
+                    var value = '~.' + path.join('.');
+                    // get columns
+                    var rg = new RegExp('[^a-z]\.(' + Object.keys(row).join('|') + ')', 'ig'), columns = cq.match(rg) || [];
+                    // process columns
+                    for (var columnI in columns) {
+                        // get column
+                        var column = columns[columnI];
+                        // get column name
+                        var columnName = column.substring(2);
+                        // get column value
+                        var columnValue = row[columnName] || 0;
+                        // replace value
+                        value = value.replace(column, column.substr(0, 1) + columnValue);
+                    }
+                    // get pure value
+                    try { value = eval(value.substring(1)) } catch(e) { value = 0 }
+                    // return pure value
+                    vars[alias].push(value);
+                }
+                // replace variable
+                expression = expression.replace(cq, alias);
+            }
+            // get all function queries
+            var fqs = expression.match(/(sum|len)\(([a-z]+|~~[0-9]+(\~[0-9])+~~)\)/ig) || [];
+            // process function queries
+            for (var fI in fqs) {
+                // get function query
+                var fq = fqs[fI];
+                // get function name
+                var funcName = fq.substr(0, 3);
+                // get variable name
+                var varName = fq.substr(4, fq.length - 5);
+                // get array
+                var arr = vars[varName] || data[varName] || [];
+                // setup value data container
+                var value = /^len$/i.test(funcName) ? arr.length : 0;
+                // sum
+                if (/^sum$/i.test(funcName)) {
+                    // sum each row
                     for (var arrI in arr) {
                         // get row
                         var row = arr[arrI];
-                        // convert path to searching query
-                        var value = '~.' + path.join('.');
-                        // get columns
-                        var rg = new RegExp('[^a-z]\.(' + Object.keys(row).join('|') + ')', 'ig'), columns = cq.match(rg) || [];
-                        // process columns
-                        for (var columnI in columns) {
-                            // get column
-                            var column = columns[columnI];
-                            // get column name
-                            var columnName = column.substring(2);
-                            // get column value
-                            var columnValue = row[columnName] || 0;
-                            // replace value
-                            value = value.replace(column, column.substr(0, 1) + columnValue);
-                        }
-                        // get pure value
-                        try { value = eval(value.substring(1)) } catch(e) { value = 0 }
-                        // return pure value
-                        vars[alias].push(value);
-                    }
-                    // replace variable
-                    expression = expression.replace(cq, alias);
-                }
-                // get all function queries
-                var fqs = expression.match(/(sum|len)\(([a-z]+|~~[0-9]+(\~[0-9])+~~)\)/ig) || [];
-                // process function queries
-                for (var fI in fqs) {
-                    // get function query
-                    var fq = fqs[fI];
-                    // get function name
-                    var funcName = fq.substr(0, 3);
-                    // get variable name
-                    var varName = fq.substr(4, fq.length - 5);
-                    // get array
-                    var arr = vars[varName] || data[varName] || [];
-                    // setup value data container
-                    var value = /^len$/i.test(funcName) ? arr.length : 0;
-                    // sum
-                    if (/^sum$/i.test(funcName)) {
-                        // sum each row
-                        for (var arrI in arr) {
-                            // get row
-                            var row = arr[arrI];
-                            // count value
-                            value += (typeof row == "object" ? 1 : row);
-                        }
-                    }
-                    // replace variable
-                    expression = expression.replace(fq, value);
-                }
-                // get random queries
-                var rdqs = expression.match(/\.?\?+/ig) || [];
-                // process random queries
-                for (var rdI in rdqs) {
-                    // get random query
-                    var rdq = rdqs[rdI];
-                    // process random numbers only
-                    if (!/^\./.test(rdq)) {
-                        var value = "";
-                        // add random number
-                        for (var rdC = 0; rdC < rdq.length; rdC++) value += Math.floor(Math.random() * 10);
-                        // replace variable
-                        expression = expression.replace(rdq, value);
+                        // count value
+                        value += (typeof row == "object" ? 1 : row);
                     }
                 }
-                // get all math queries
-                var mqs = expression.match(/[0-9.\+\-\*\/\^%\(\)]+/ig) || [];
-                // process all math queries
-                for (var mqI in mqs) {
-                    // get math query
-                    var mq = mqs[mqI];
-                    // only process math formula
-                    if (/[\(\)\+\-\*\/\^%]+/i.test(mq)) {
-                        // setup value data container
-                        var value = 0;
-                        // clear noise
-                        if (/\.$/.test(mq)) mq = mq.substr(0, mq.length - 1);
-                        // cal value
-                        try { value = eval(mq) } catch(e) { value = 0 }
-                        // replace variable
-                        expression = expression.replace(mq, value);
-                    }
-                }
-                // get all decimal point queries
-                var dpqs = expression.match(/[0-9\.]+(\.\?+|\.$)/ig) || [];
-                // process all decimal point queries
-                for (var dpI in dpqs) {
-                    // get decimal point query
-                    var dpq = dpqs[dpI];
-                    // get args
-                    var args = dpq.split('.');
-                    // get real number
-                    var realNumber = [args.shift(), ""];
-                    // get length
-                    var length = (args.pop() || "").length;
-                    // setup digits after decimal point
-                    args[0] = args[0] || "";
-                    // append digits to real number
-                    for (var dpC = 0; dpC < length; dpC++) realNumber[1] += args[0][dpC] || '0';
-                    // replace variable
-                    expression = expression.replace(dpq, realNumber.filter(n => n).join('.'));
-                }
-                // update string
-                str = str.replace(query, expression);
+                // replace variable
+                expression = expression.replace(fq, value);
             }
+            // get random queries
+            var rdqs = expression.match(/\.?\?+/ig) || [];
+            // process random queries
+            for (var rdI in rdqs) {
+                // get random query
+                var rdq = rdqs[rdI];
+                // process random numbers only
+                if (!/^\./.test(rdq)) {
+                    var value = "";
+                    // add random number
+                    for (var rdC = 0; rdC < rdq.length; rdC++) value += Math.floor(Math.random() * 10);
+                    // replace variable
+                    expression = expression.replace(rdq, value);
+                }
+            }
+            // get all math queries
+            var mqs = expression.match(/[0-9.\+\-\*\/\^%\(\)]+/ig) || [];
+            // process all math queries
+            for (var mqI in mqs) {
+                // get math query
+                var mq = mqs[mqI];
+                // only process math formula
+                if (/[\(\)\+\-\*\/\^%]+/i.test(mq)) {
+                    // setup value data container
+                    var value = 0;
+                    // clear noise
+                    if (/\.$/.test(mq)) mq = mq.substr(0, mq.length - 1);
+                    // cal value
+                    try { value = eval(mq) } catch(e) { value = 0 }
+                    // replace variable
+                    expression = expression.replace(mq, value);
+                }
+            }
+            // get all decimal point queries
+            var dpqs = expression.match(/[0-9\.]+(\.\?+|\.$)/ig) || [];
+            // process all decimal point queries
+            for (var dpI in dpqs) {
+                // get decimal point query
+                var dpq = dpqs[dpI];
+                // get args
+                var args = dpq.split('.');
+                // get real number
+                var realNumber = [args.shift(), ""];
+                // get length
+                var length = (args.pop() || "").length;
+                // setup digits after decimal point
+                args[0] = args[0] || "";
+                // append digits to real number
+                for (var dpC = 0; dpC < length; dpC++) realNumber[1] += args[0][dpC] || '0';
+                // replace variable
+                expression = expression.replace(dpq, realNumber.filter(n => n).join('.'));
+            }
+            // update string
+            str = str.replace(query, expression);
         }
-        // change result to object
-        try { result = result || (/^(\{.*\}|\[.*\])$/i.test(str) ? JSON.parse(str) : str) } catch(e) { result = str }
     }
+    // change result to object
+    try { result = result || (/^(\{.*\}|\[.*\])$/i.test(str) ? JSON.parse(str) : str) } catch(e) { result = str }
     return result;
 };

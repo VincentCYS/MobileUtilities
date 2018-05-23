@@ -1,7 +1,10 @@
 module.exports  = function(str, data) {
     // setup result data container
     var result = null;
-    if ((str || "").length) {
+    if (!(str || "").length) {
+        // no requirement
+        result = str;
+    } else {
         // get expression queries
         var eqs = (str||"").match(/\$\{[a-z0-9\._,%:\"\{\}\[\]\(\)=\*\/\^\+\-\? ]+\}/ig) || [];
         // execute
@@ -208,8 +211,8 @@ module.exports  = function(str, data) {
                 str = str.replace(query, expression);
             }
         }
+        // change result to object
+        try { result = result || (/^(\{.*\}|\[.*\])$/i.test(str) ? JSON.parse(str) : str) } catch(e) { result = str }
     }
-    // change result to object
-    try { result = result || (/^(\{.*\}|\[.*\])$/i.test(str) ? JSON.parse(str) : str) } catch(e) { result = str }
     return result;
 };

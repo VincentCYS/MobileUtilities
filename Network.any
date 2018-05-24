@@ -8,7 +8,7 @@ var evaluate    = require(10023);
 module.exports  = function(g, t) {
     var k = g.url || "";
     // invalid format
-    if (!k.length || !/^(ble|https?|wss?|contacts|files):\/\//i.test(k)) {
+    if (!k.length || !/^(ble|https?|wss?|contacts|app):\/\//i.test(k)) {
         // return error
         t.failed && t.failed("Required address is invalid.");
     // bluetooth
@@ -176,10 +176,10 @@ module.exports  = function(g, t) {
             }
         })
     // local storage
-    } else if (/^files:\/\//i.test(k)) {
+    } else if (/^app:\/\//i.test(k)) {
         var appId = 'APP';
         // get address
-        var uri = (k.substring(8) || "").split("/").filter(function(n) { return n });
+        var uri = (k.substring(6) || "").split("/").filter(function(n) { return n });
         // delete data
         if (/^delete$/i.test(g.method)) {
             // extract prefix
@@ -191,24 +191,39 @@ module.exports  = function(g, t) {
             });
         // save data
         } else if (/^post|put$/i.test(g.method)) {
-            // process form data
-            var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body)).split("&").filter(function(n){return n});
-            // extract prefix
-            var prefix = uri.shift();
-            // add prefix for form data
-            for (var i in formData) {
-                var field = formData[i].split("="), sprt = field[0].indexOf("[");
-                field[0] = sprt >= 0 ? "[" + field[0].substr(0, sprt) + "]" + field[0].substring(sprt) : "[" + field[0] + "]";
-                field[0] = prefix + (uri.length ? "[" + uri.join("][") + "]" : "") + field[0];
-                console.log("[debug] " + g.method + " form data: ", field[0]);
-                formData[i] = field.join("=");
-            }
-            // convert to json format
-            formData = qs.parse(formData.join("&"));
-            // save data
-            __rN.AsyncStorage.mergeItem(appId, JSON.stringify(formData), function() {
-                // get all : get specified
-                t.succeeded && t.succeeded(formData);
+            // fetch app data for reference
+            __rN.AsyncStorage.getItem(appId, function(err, result) {
+                // callback type
+                if (err) {
+                    // callback
+                    t.failed && t.failed(err.message);
+                } else {
+                    // setup data container
+                    var data = null;
+                    // parse result
+                    try { data = JSON.parse(result) } catch(e) { data = null } finally { data = data || {} }
+                    // process form data
+                    var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body)).split("&").filter(function(n){return n});
+                    // extract prefix
+                    var prefix = uri.shift();
+                    // add prefix for form data
+                    for (var i in formData) {
+                        var field = formData[i].split("="), sprt = field[0].indexOf("[");
+                        field[0] = sprt >= 0 ? "[" + field[0].substr(0, sprt) + "]" + field[0].substring(sprt) : "[" + field[0] + "]";
+                        field[0] = prefix + (uri.length ? "[" + uri.join("][") + "]" : "") + field[0];
+                        if (/^post$/i.test(g.method)) {
+                            console.log("[debug] create form data: ", field[0].replace(/(\]\[|\]|\[)/, '.'), field[0]);
+                        }
+                        formData[i] = field.join("=");
+                    }
+                    // convert to json format
+                    formData = qs.parse(formData.join("&"));
+                    // save data
+                    __rN.AsyncStorage.mergeItem(appId, JSON.stringify(formData), function() {
+                        // get all : get specified
+                        t.succeeded && t.succeeded(formData);
+                    });
+                }
             });
         // get data
         } else {

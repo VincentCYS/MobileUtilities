@@ -225,11 +225,11 @@ module.exports  = function(g, t) {
                         var field = formData[i].split("="), sprt = field[0].indexOf("[");
                         field[0] = sprt >= 0 ? "[" + field[0].substr(0, sprt) + "]" + field[0].substring(sprt) : "[" + field[0] + "]";
                         field[0] = prefix + (uri.length ? "[" + uri.join("][") + "]" : "") + field[0];
-                        console.log("[debug] form data: ", field[0]);
                         formData[i] = field.join("=");
                     }
                     // convert to json format
                     formData = qs.parse(formData.join("&"));
+                    console.log("[debug] form data: ", formData);
                     // save data
                     __rN.AsyncStorage.mergeItem(appId, JSON.stringify(formData), function() {
                         // get all : get specified

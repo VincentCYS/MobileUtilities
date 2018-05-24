@@ -198,22 +198,27 @@ module.exports  = function(g, t) {
                     // callback
                     t.failed && t.failed(err.message);
                 } else {
+                    // setup data container
+                    var data = null, rows = [];
+                    // parse result
+                    try { data = JSON.parse(result) } catch(e) { data = null } finally { data = data || {} }
                     // process form data
                     var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body)).split("&").filter(function(n){return n});
                     // extract prefix
                     var prefix = uri.shift();
                     if (/^post$/i.test(g.method)) {
-                        // setup data container
-                        var data = null;
-                        // parse result
-                        try { data = JSON.parse(result) } catch(e) { data = null } finally { data = data || {} }
                         // adjust prefix
                         prefix += (uri.length ? "[" + uri.join("][") + "]" : "");
                         // clear uri
                         uri = [];
                         // convert prefix formart from query string to json as pointing key
                         var key = prefix.replace(/(\]\[|\[)/g, '.').replace(/\]$/, '');
-                        console.log("[debug] create form data prefix: ", key);
+                        // get reference
+                        rows = evaluate("${" + key + "}", data);
+                        // not an array?
+                        if (!Array.isArray(rows)) rows = [];
+                        // append index for creating new row
+                        uri.push(rows.length);
                     }
                     // add prefix for form data
                     for (var i in formData) {

@@ -232,8 +232,9 @@ module.exports  = function(g, t) {
                         var row = {};
                         row[prefix] = {};
                         row[prefix][i] = rows[i];
-                        console.log("[debug] row: ", qs.stringify(row).replace(/%5B/g, '[').replace(/%5D/g, ']'));
+                        formData.push(qs.stringify(row).replace(/%5B/g, '[').replace(/%5D/g, ']'));
                     }
+                    console.log("[debug] form data: ", formData.join("&"));
                     // convert to json format
                     formData = qs.parse(formData.join("&"));
                     // save data

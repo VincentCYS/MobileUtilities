@@ -160,7 +160,10 @@ module.exports  = function(g, t) {
             // get all
             if (!uri.length) {
                 contacts.getAll(function(err, contacts) {
-                    console.log("[debug] got contact: ", contacts);
+                    // callback type
+                    var cbType = !err ? 'succeeded' : 'failed';
+                    // callback
+                    t[cbType] && t[cbType](err ? err.message : contacts);
                 });
             // get specified
             } else {

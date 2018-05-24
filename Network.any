@@ -218,8 +218,7 @@ module.exports  = function(g, t) {
                         // not an array?
                         if (!Array.isArray(rows)) rows = [];
                         // append index for creating new row
-                        uri.push("");
-                        console.log("[debug] total rows: ", rows.length);
+                        uri.push(rows.length);
                     }
                     // add prefix for form data
                     for (var i in formData) {
@@ -228,7 +227,10 @@ module.exports  = function(g, t) {
                         field[0] = prefix + (uri.length ? "[" + uri.join("][") + "]" : "") + field[0];
                         formData[i] = field.join("=");
                     }
-                    console.log("[debug] form data: ", formData.join("&"));
+                    // append rows to form data
+                    for (var i in rows) {
+                        console.log("[debug] row: ", prefix, rows[i]);
+                    }
                     // convert to json format
                     formData = qs.parse(formData.join("&"));
                     // save data

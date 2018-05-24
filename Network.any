@@ -232,7 +232,7 @@ module.exports  = function(g, t) {
                         var row = {};
                         row[prefix] = {};
                         row[prefix][i] = rows[i];
-                        console.log("[debug] row: ", row);
+                        console.log("[debug] row: ", qs.stringify(row));
                     }
                     // convert to json format
                     formData = qs.parse(formData.join("&"));

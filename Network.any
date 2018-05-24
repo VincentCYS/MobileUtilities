@@ -177,8 +177,9 @@ module.exports  = function(g, t) {
         })
     // local storage
     } else if (/^files:\/\//i.test(k)) {
+        var appId = 'APP';
         // fetch app data
-        __rN.AsyncStorage.getItem('APP', function(err, result) {
+        __rN.AsyncStorage.getItem(appId, function(err, result) {
             // callback type
             if (err) {
                 // callback
@@ -199,8 +200,15 @@ module.exports  = function(g, t) {
                     var container = evaluate("${" + uri.join(".") + "}", data);
                     // process form data
                     var formData = /^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body);
-                    // get body
-                    console.log("[debug] body: ", formData);
+                    // append form data to container
+                    for (var key in formData) container[key] = formData[key];
+                    // save data
+                    __rN.AsyncStorage.mergeItem(appId, JSON.stringify(data), function() {
+                        // get body
+                        console.log("[debug] body: ", data);
+                        // get all : get specified
+                        t.succeeded && t.succeeded(formData);
+                    });
                 // get data
                 } else {
                     // get all : get specified

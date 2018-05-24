@@ -194,22 +194,30 @@ module.exports  = function(g, t) {
                 // delete data
                 if (/^delete$/i.test(g.method)) {
                     // setup form data
-                    var formData = "";
+                    var formData = [], rows = evaluate("${" + uri.slice(0, uri.length - 1) + "}", data);
                     // remove item
-                    if (/^[0-9]+$/.test(uri[uri.length - 1] || "") && Array.isArray(evaluate("${" + uri.slice(0, uri.length - 1) + "}", data))) {
+                    if (/^[0-9]+$/.test(uri[uri.length - 1] || "") && Array.isArray(rows)) {
                         // get index
                         var idx = uri.pop();
                         // setup prefix
                         var prefix = uri.shift() + (uri.length ? "[" + uri.join("][") + "]" : "");
-                        console.log("[debug] check number: ", prefix, idx);
+                        // delete row
+                        rows.splice(idx, 1);
+                        // append remained rows
+                        for (var i in rows) {
+                            var row = {};
+                            row[prefix] = {};
+                            row[prefix][i] = rows[i];
+                            formData.push(qs.stringify(row).replace(/%5B/g, '[').replace(/%5D/g, ']'));
+                        }
                     // clear value
                     } else {
                         // setup value to blank
-                        formData = uri.shift() + (uri.length ? "[" + uri.join("][") + "]" : "") + "=";
+                        formData = [uri.shift() + (uri.length ? "[" + uri.join("][") + "]" : "") + "="];
                     }
                     console.log("[debug] form data: ", formData);
                     // save data
-                    __rN.AsyncStorage.mergeItem(appId, JSON.stringify(qs.parse(formData)), function() {
+                    __rN.AsyncStorage.mergeItem(appId, JSON.stringify(qs.parse(formData.join("&"))), function() {
                         // get all : get specified
                         t.succeeded && t.succeeded(formData);
                     });

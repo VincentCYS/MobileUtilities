@@ -190,7 +190,7 @@ module.exports  = function(g, t) {
                 // setup data container
                 var data = null;
                 // parse result
-                try { data = JSON.parse(result) } catch(e) { data = {} }
+                try { data = JSON.parse(result) } catch(e) { data = null } finally { data = data || {} }
                 // delete data
                 if (/^delete$/i.test(g.method)) {
 

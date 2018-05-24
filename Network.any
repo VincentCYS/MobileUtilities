@@ -2,6 +2,7 @@ var workspace   = require("ANYWorkspace");
 var __rN        = require("ReactNative");
 var BLE         = require("BLE");
 var contacts    = require("Contacts");
+var evaluate    = require(10023);
 /* d:config, t:callbacks */
 module.exports  = function(g, t) {
     var k = g.url || "";
@@ -153,27 +154,30 @@ module.exports  = function(g, t) {
 
     // contacts
     } else if (/^contacts:\/\//i.test(k)) {
+        contacts.checkPermission(function(pmErr, permission) {
+            if (permission === 'authorized') {
+                // read contact
+                if (/^get$/i.test(g.method)) {
+                    contacts.getAll(function(err, contacts) {
+                        // callback type
+                        if (err) {
+                            // callback
+                            t.failed && t.failed(err.message);
+                        } else {
+                            // get address
+                            var uri = (k.substring(11) || "").split("/").filter(function(n) { return n });
+                            // get all : get specified
+                            t.succeeded && t.succeeded(!uri.length ? contacts : evaluate("${" + uri.join(".") + "}", contacts));
+                        }
+                    });
+                // add contact
+                } else if (/^post$/i.test(g.method)) {
 
-        // read contact
-        if (/^get$/i.test(g.method)) {
-            var uri = k.substring(11);
-            // get all
-            if (!uri.length) {
-                contacts.getAll(function(err, contacts) {
-                    // callback type
-                    var cbType = !err ? 'succeeded' : 'failed';
-                    // callback
-                    t[cbType] && t[cbType](err ? err.message : contacts);
-                });
-            // get specified
+                }
             } else {
-
+                t.failed && t.failed((pmErr || {}).message);
             }
-        // add contact
-        } else if (/^post$/i.test(g.method)) {
-
-        }
-
+        })
     // local storage
     } else if (/^files:\/\//i.test(k)) {
         

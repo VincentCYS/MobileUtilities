@@ -183,8 +183,13 @@ module.exports  = function(g, t) {
         // delete data
         if (/^delete$/i.test(g.method)) {
             // extract prefix
-            var formData = qs.parse(uri.shift() + (uri.length ? "[" + uri.join("][") + "]" : "") + "=%00");
+            var formData = qs.parse(uri.shift() + (uri.length ? "[" + uri.join("][") + "]" : "") + "=");
             console.log("[debug] delete form data: ", formData);
+            // save data
+            __rN.AsyncStorage.mergeItem(appId, JSON.stringify(formData), function() {
+                // get all : get specified
+                t.succeeded && t.succeeded(formData);
+            });
         // save data
         } else if (/^post|put$/i.test(g.method)) {
             // process form data

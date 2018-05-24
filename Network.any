@@ -218,7 +218,7 @@ module.exports  = function(g, t) {
                         // not an array?
                         if (!Array.isArray(rows)) rows = [];
                         // append index for creating new row
-                        uri.push(rows.length);
+                        uri.push();
                     }
                     // add prefix for form data
                     for (var i in formData) {

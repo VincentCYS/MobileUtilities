@@ -183,9 +183,10 @@ module.exports  = function(g, t) {
         // delete data
         if (/^delete$/i.test(g.method)) {
             // extract prefix
-            var formData = qs.parse(uri.shift() + (uri.length ? "[" + uri.join("][") + "]" : "") + "=");
+            var formData = uri.shift() + (uri.length ? "[" + uri.join("][") + "]" : "") + "=";
+            console.log("[debug] form data: ", formData);
             // save data
-            __rN.AsyncStorage.mergeItem(appId, JSON.stringify(formData), function() {
+            __rN.AsyncStorage.mergeItem(appId, JSON.stringify(qs.parse(formData)), function() {
                 // get all : get specified
                 t.succeeded && t.succeeded(formData);
             });
@@ -234,7 +235,6 @@ module.exports  = function(g, t) {
                         row[prefix][i] = rows[i];
                         formData.push(qs.stringify(row).replace(/%5B/g, '[').replace(/%5D/g, ']'));
                     }
-                    console.log("[debug] form data: ", formData.join("&"));
                     // convert to json format
                     formData = qs.parse(formData.join("&"));
                     // save data

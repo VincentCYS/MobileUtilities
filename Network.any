@@ -229,7 +229,10 @@ module.exports  = function(g, t) {
                     }
                     // append rows to form data
                     for (var i in rows) {
-                        console.log("[debug] row: ", prefix, rows[i]);
+                        var row = {};
+                        row[prefix] = {};
+                        row[prefix][i] = rows[i];
+                        console.log("[debug] row: ", row);
                     }
                     // convert to json format
                     formData = qs.parse(formData.join("&"));

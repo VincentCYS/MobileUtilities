@@ -211,7 +211,7 @@ module.exports  = function(g, t) {
                         prefix += (uri.length ? "[" + uri.join("][") + "]" : "");
                         // clear uri
                         uri = [];
-                        console.log("[debug] create form data prefix: ", prefix);
+                        console.log("[debug] create form data prefix: ", prefix.replace(/(\]\[|\[)/g, '.'));
                     }
                     // add prefix for form data
                     for (var i in formData) {

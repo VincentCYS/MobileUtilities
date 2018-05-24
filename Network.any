@@ -219,6 +219,7 @@ module.exports  = function(g, t) {
                         if (!Array.isArray(rows)) rows = [];
                         // append index for creating new row
                         uri.push();
+                        console.log("[debug] total rows: ", rows.length);
                     }
                     // add prefix for form data
                     for (var i in formData) {
@@ -229,7 +230,7 @@ module.exports  = function(g, t) {
                     }
                     // convert to json format
                     formData = qs.parse(formData.join("&"));
-                    console.log("[debug] form data: ", formData);
+                    
                     // save data
                     __rN.AsyncStorage.mergeItem(appId, JSON.stringify(formData), function() {
                         // get all : get specified

@@ -199,11 +199,13 @@ module.exports  = function(g, t) {
                     // process form data
                     var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body)).split("&").filter(function(n){return n});
                     // extract prefix
-                    var prefix = uri.shift();// + (uri.length ? "[" + uri.join("][") + "]" : "");
+                    var prefix = uri.shift();// + ;
                     // add prefix for form data
                     for (var i in formData) {
                         var field = formData[i].split("="), sprt = field[0].indexOf("[");
-                        console.log("[debug] body: ", prefix, field[0].substr(0, sprt), field[0].substring(sprt));
+                        field[0] = sprt >= 0 ? "[" + field[0].substr(0, sprt) + "]" + field[0].substring(sprt) : "[" + field[0] + "]";
+                        field[0] = prefix + (uri.length ? "[" + uri.join("][") + "]" : "") + field[0];
+                        console.log("[debug] body: ", field);
                     }
                     /*
                     // get targeted data container

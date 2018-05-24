@@ -196,19 +196,22 @@ module.exports  = function(g, t) {
 
                 // save data
                 } else if (/^post|put$/i.test(g.method)) {
+                    // process form data
+                    var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body));
+                    console.log("[debug] body: ", uri, formData);
+                    /*
                     // get targeted data container
                     var container = evaluate("${" + uri.join(".") + "}", data);
-                    // process form data
-                    var formData = /^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body);
                     // append form data to container
                     for (var key in formData) container[key] = formData[key];
                     // save data
                     __rN.AsyncStorage.mergeItem(appId, JSON.stringify(data), function() {
                         // get body
-                        console.log("[debug] body: ", data);
+                        console.log("[debug] body: ", data, container);
                         // get all : get specified
                         t.succeeded && t.succeeded(formData);
                     });
+                    */
                 // get data
                 } else {
                     // get all : get specified

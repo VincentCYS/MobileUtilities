@@ -6,14 +6,10 @@ var evaluate    = require(10023);
 /* d:config, t:callbacks */
 module.exports  = function(g, t) {
     var k = g.url || "";
-    // need url
-    if (k.length < 1) {
-        // return error
-
     // invalid format
-    } else if (!/^(ble|https?|wss?|contacts|files):\/\//i.test(k)) {
+    if (!k.length || !/^(ble|https?|wss?|contacts|files):\/\//i.test(k)) {
         // return error
-
+        t.failed && t.failed("Required address is invalid.");
     // bluetooth
     } else if (/^ble:\/\//i.test(k)) {
         // get splitted path
@@ -156,7 +152,7 @@ module.exports  = function(g, t) {
     } else if (/^contacts:\/\//i.test(k)) {
         contacts.checkPermission(function(pmErr, permission) {
             if (permission === 'authorized') {
-                // read contact
+                // read contacts
                 if (/^get$/i.test(g.method)) {
                     contacts.getAll(function(err, contacts) {
                         // callback type
@@ -180,7 +176,35 @@ module.exports  = function(g, t) {
         })
     // local storage
     } else if (/^files:\/\//i.test(k)) {
-        
+        // fetch app data
+        __rN.AsyncStorage.getItem('APP', function(err, result) {
+            // callback type
+            if (err) {
+                // callback
+                t.failed && t.failed(err.message);
+            } else {
+                // get address
+                var uri = (k.substring(8) || "").split("/").filter(function(n) { return n });
+                // setup data container
+                var data = null;
+                // parse result
+                try { data = JSON.parse(result) } catch(e) { data = {} }
+                // delete data
+                if (/^delete$/i.test(g.method)) {
+
+                // save data
+                } else if (/^post|put$/i.test(g.method)) {
+                    // get targeted data container
+                    var container = evaluate("${" + uri.join(".") + "}", data);
+                    // get body
+                    console.log("[debug] body: ", g.body);
+                // get data
+                } else {
+                    // get all : get specified
+                    t.succeeded && t.succeeded(!uri.length ? data : evaluate("${" + uri.join(".") + "}", data));
+                }
+            }
+        });
     // http by default
     } else {
         // remove url from config

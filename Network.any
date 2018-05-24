@@ -228,9 +228,9 @@ module.exports  = function(g, t) {
                         field[0] = prefix + (uri.length ? "[" + uri.join("][") + "]" : "") + field[0];
                         formData[i] = field.join("=");
                     }
+                    console.log("[debug] form data: ", formData.join("&"));
                     // convert to json format
                     formData = qs.parse(formData.join("&"));
-                    
                     // save data
                     __rN.AsyncStorage.mergeItem(appId, JSON.stringify(formData), function() {
                         // get all : get specified

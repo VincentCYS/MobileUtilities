@@ -193,9 +193,20 @@ module.exports  = function(g, t) {
                 try { data = JSON.parse(result) } catch(e) { data = null } finally { data = data || {} }
                 // delete data
                 if (/^delete$/i.test(g.method)) {
-                    console.log("[debug] check number: ", uri[uri.length - 1], uri.slice(0, uri.length - 1));
-                    // extract prefix
-                    var formData = uri.shift() + (uri.length ? "[" + uri.join("][") + "]" : "") + "=";
+                    // setup form data
+                    var formData = "";
+                    // remove item
+                    if (/^[0-9]+$/.test(uri[uri.length - 1] || "") && Array.isArray(evaluate("${" + uri.slice(0, uri.length - 1) + "}", data))) {
+                        // get index
+                        var idx = uri.pop();
+                        // setup prefix
+                        var prefix = uri.shift() + (uri.length ? "[" + uri.join("][") + "]" : "");
+                        console.log("[debug] check number: ", prefix, idx);
+                    // clear value
+                    } else {
+                        // setup value to blank
+                        formData = uri.shift() + (uri.length ? "[" + uri.join("][") + "]" : "") + "=";
+                    }
                     console.log("[debug] form data: ", formData);
                     // save data
                     __rN.AsyncStorage.mergeItem(appId, JSON.stringify(qs.parse(formData)), function() {

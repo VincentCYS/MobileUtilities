@@ -182,13 +182,15 @@ module.exports  = function(g, t) {
         var uri = (k.substring(8) || "").split("/").filter(function(n) { return n });
         // delete data
         if (/^delete$/i.test(g.method)) {
-
+            // extract prefix
+            var formData = qs.parse(uri.shift() + (uri.length ? "[" + uri.join("][") + "]" : "") + "=%00");
+            console.log("[debug] delete form data: ", formData);
         // save data
         } else if (/^post|put$/i.test(g.method)) {
             // process form data
             var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body)).split("&").filter(function(n){return n});
             // extract prefix
-            var prefix = uri.shift();// + ;
+            var prefix = uri.shift();
             // add prefix for form data
             for (var i in formData) {
                 var field = formData[i].split("="), sprt = field[0].indexOf("[");

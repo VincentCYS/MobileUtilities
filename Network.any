@@ -180,29 +180,32 @@ module.exports  = function(g, t) {
         var appId = 'APP';
         // get address
         var uri = (k.substring(6) || "").split("/").filter(function(n) { return n });
-        // delete data
-        if (/^delete$/i.test(g.method)) {
-            // extract prefix
-            var formData = uri.shift() + (uri.length ? "[" + uri.join("][") + "]" : "") + "=";
-            console.log("[debug] form data: ", formData);
-            // save data
-            __rN.AsyncStorage.mergeItem(appId, JSON.stringify(qs.parse(formData)), function() {
-                // get all : get specified
-                t.succeeded && t.succeeded(formData);
-            });
-        // save data
-        } else if (/^post|put$/i.test(g.method)) {
-            // fetch app data for reference
-            __rN.AsyncStorage.getItem(appId, function(err, result) {
-                // callback type
-                if (err) {
-                    // callback
-                    t.failed && t.failed(err.message);
-                } else {
-                    // setup data container
-                    var data = null, rows = [];
-                    // parse result
-                    try { data = JSON.parse(result) } catch(e) { data = null } finally { data = data || {} }
+        // fetch app data for reference
+        __rN.AsyncStorage.getItem(appId, function(err, result) {
+            // callback type
+            if (err) {
+                // callback
+                t.failed && t.failed(err.message);
+            } else {
+                // setup data container
+                var data = null;
+                // parse result
+                try { data = JSON.parse(result) } catch(e) { data = null } finally { data = data || {} }
+                // delete data
+                if (/^delete$/i.test(g.method)) {
+                    console.log("[debug] check number: ", uri[uri.length - 1], uri.slice(0, uri.length - 1));
+                    // extract prefix
+                    var formData = uri.shift() + (uri.length ? "[" + uri.join("][") + "]" : "") + "=";
+                    console.log("[debug] form data: ", formData);
+                    // save data
+                    __rN.AsyncStorage.mergeItem(appId, JSON.stringify(qs.parse(formData)), function() {
+                        // get all : get specified
+                        t.succeeded && t.succeeded(formData);
+                    });
+                // save data
+                } else if (/^post|put$/i.test(g.method)) {
+                    // setup container
+                    var rows = [];
                     // process form data
                     var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body)).split("&").filter(function(n){return n});
                     // extract prefix
@@ -242,26 +245,13 @@ module.exports  = function(g, t) {
                         // get all : get specified
                         t.succeeded && t.succeeded(formData);
                     });
-                }
-            });
-        // get data
-        } else {
-            // fetch app data
-            __rN.AsyncStorage.getItem(appId, function(err, result) {
-                // callback type
-                if (err) {
-                    // callback
-                    t.failed && t.failed(err.message);
+                // get data
                 } else {
-                    // setup data container
-                    var data = null;
-                    // parse result
-                    try { data = JSON.parse(result) } catch(e) { data = null } finally { data = data || {} }
                     // get all : get specified
                     t.succeeded && t.succeeded(!uri.length ? data : evaluate("${" + uri.join(".") + "}", data));
                 }
-            });
-        }
+            }
+        });
     // http by default
     } else {
         // remove url from config

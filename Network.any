@@ -197,8 +197,11 @@ module.exports  = function(g, t) {
                 // save data
                 } else if (/^post|put$/i.test(g.method)) {
                     // process form data
-                    var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body));
-                    console.log("[debug] body: ", uri, formData);
+                    var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body)).split("&").filter(function(n){return n});
+                    // extract prefix
+                    var prefix = uri.shift() + (uri.length ? "[" + uri.join("][") + "]" : "");
+
+                    console.log("[debug] body: ", prefix, formData);
                     /*
                     // get targeted data container
                     var container = evaluate("${" + uri.join(".") + "}", data);

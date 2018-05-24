@@ -2,6 +2,7 @@ var workspace   = require("ANYWorkspace");
 var __rN        = require("ReactNative");
 var BLE         = require("BLE");
 var contacts    = require("Contacts");
+var qs          = require("QueryString");
 var evaluate    = require(10023);
 /* d:config, t:callbacks */
 module.exports  = function(g, t) {
@@ -196,8 +197,10 @@ module.exports  = function(g, t) {
                 } else if (/^post|put$/i.test(g.method)) {
                     // get targeted data container
                     var container = evaluate("${" + uri.join(".") + "}", data);
+                    // process form data
+                    var formData = /^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body);
                     // get body
-                    console.log("[debug] body: ", g.body);
+                    console.log("[debug] body: ", formData);
                 // get data
                 } else {
                     // get all : get specified

@@ -211,7 +211,9 @@ module.exports  = function(g, t) {
                         prefix += (uri.length ? "[" + uri.join("][") + "]" : "");
                         // clear uri
                         uri = [];
-                        console.log("[debug] create form data prefix: ", prefix.replace(/(\]\[|\[)/g, '.'));
+                        // convert prefix formart from query string to json as pointing key
+                        var key = prefix.replace(/(\]\[|\[)/g, '.').replace(/\]$/, '');
+                        console.log("[debug] create form data prefix: ", key);
                     }
                     // add prefix for form data
                     for (var i in formData) {

@@ -25,9 +25,9 @@ module.exports  = function(str, data) {
             var args = object.split('.');
             // search values
             while (value && args.length > 0) {
-                console.log("[debug] key checking:", key);
                 // get key
                 var key = args.shift();
+                console.log("[debug] key check:", key, object);
                 // is it an array?
                 if (/^\[.*\]$/i.test(key)) {
                     // setup an array for storing selected rows

@@ -17,7 +17,6 @@ module.exports  = function(str, data) {
         for (var oI in objects) {
             // get object
             var object = objects[oI];
-            console.log("[debug] checking object:", object);
             // create alias
             var alias = `~~${[qI, oI].join('~')}~~`;
             // setup value container
@@ -54,10 +53,6 @@ module.exports  = function(str, data) {
                     object = path.slice(0, path.length - args.length - 1).join('.');
                 // general value
                 } else {
-                    console.log("[debug] checking key:", {
-                        key: key,
-                        value: value
-                    });
                     // get value directly
                     value = value[key];
                 }
@@ -86,6 +81,7 @@ module.exports  = function(str, data) {
                 expression = expression.replace(object, value);
             }
         }
+        console.log("[debug] first result:", result);
         // result is still empty
         if (!result) {
             // get all column queries

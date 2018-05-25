@@ -29,27 +29,29 @@ module.exports  = function(str, data) {
                 var key = args.shift();
                 // is it an array?
                 if (/^\[.*\]$/i.test(key)) {
-                    // setup an array for storing selected rows
-                    var arr = [];
                     // get values
                     var values = key.substr(1, key.length - 2).split(',').filter(n => n);
-                    
-                    console.log("[debug] key check:", values, typeof value);
-
-
-                    // process values
-                    for (var valI in values) {
-                        // get index
-                        var idx = values[valI];
-                        // value exists
-                        if (typeof value[idx] != "undefined") {
-                            // append to array data container
-                            arr.push(value[idx]);
+                    // string? substr
+                    if (typeof value == "string" && values.length <= 2) {
+                        // update value
+                        value = values[1] ? value.substr(values[0], values[1]) : value.substring(values[0]);
+                    // the rest
+                    } else {
+                        // setup an array for storing selected rows
+                        var arr = [];
+                        // process values
+                        for (var valI in values) {
+                            // get index
+                            var idx = values[valI];
+                            // value exists
+                            if (typeof value[idx] != "undefined") {
+                                // append to array data container
+                                arr.push(value[idx]);
+                            }
                         }
+                        // update value
+                        value = arr.length > 0 ? arr : null;
                     }
-                    // update value
-                    value = arr.length > 0 ? arr : null;
-
                 // find column
                 } else if (Array.isArray(value) && typeof value[key] == "undefined") {
                     // get path

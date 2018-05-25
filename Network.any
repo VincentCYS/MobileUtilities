@@ -351,6 +351,7 @@ module.exports  = function(g, t) {
                     var caller = instance.__caller;
                     // get original props
                     var oriProps = JSON.parse(JSON.stringify(instance.__props));
+                    /*
                     // release node
                     if (/^node$/i.test(type)) {
                         // get ids that need to clear
@@ -394,6 +395,7 @@ module.exports  = function(g, t) {
                         // delete from alias container
                         delete workspace.aliases[alias][id];
                     }
+                    */
                     // append new props to original prop data container
                     for (var key in props) oriProps[key] = props[key];
                     // reload

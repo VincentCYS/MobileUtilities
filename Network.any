@@ -285,7 +285,7 @@ module.exports  = function(g, t) {
             // get closest view
             var closestView = workspace.tree[id].dom();
             // get component type
-            var type = closestView.id != id ? "node" : "view";
+            var type = (closestView || {}).id != id ? "node" : "view";
             // get info
             if (/^get$/i.test(g.method)) {
                 // create data container

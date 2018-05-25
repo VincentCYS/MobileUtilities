@@ -334,46 +334,49 @@ module.exports  = function(g, t) {
                     var caller = instance.__caller;
                     // get original props
                     var oriProps = JSON.parse(JSON.stringify(instance.__props));
-                    // get ids that need to clear
-                    var ids = [], getChildIds = function(nId, trigger) {
-                        ids.unshift([trigger, nId]);
-                        if (workspace.tree[nId]) {
-                            for (var t in workspace.tree[nId].childs) {
-                                for (var cIdx in workspace.tree[nId].childs[t]) {
-                                    getChildIds(workspace.tree[nId].childs[t][cIdx], t);
+                    // release node
+                    if (/^node$/i.test(type)) {
+                        // get ids that need to clear
+                        var ids = [], getChildIds = function(nId, trigger) {
+                            ids.unshift([trigger, nId]);
+                            if (workspace.tree[nId]) {
+                                for (var t in workspace.tree[nId].childs) {
+                                    for (var cIdx in workspace.tree[nId].childs[t]) {
+                                        getChildIds(workspace.tree[nId].childs[t][cIdx], t);
+                                    }
                                 }
                             }
+                        };
+                        // get child ids
+                        getChildIds(id, instance.__trigger);
+                        // delete child nodes
+                        for (var i in ids) {
+                            // get parent id
+                            var parentId = workspace.tree[ids[i][1]].paths.node[workspace.tree[ids[i][1]].paths.node.length - 1];
+                            // parent node exists
+                            if (parentId) {
+                                // get child index
+                                var idx = (((workspace.tree[parentId] || {}).childs || {})[ids[i][0]] || []).indexOf(ids[i][1]);
+                                // delete instance from parent
+                                if (idx >= 0) workspace.tree[parentId].childs[ids[i][0]].splice(idx, 1);
+                                // delete node
+                                delete workspace.tree[ids[i][1]];
+                            }
+                            // get parent id
+                            parentId = (workspace.views[ids[i][1]] || {}).parent;
+                            // parent view exists
+                            if (parentId) {
+                                // get child index
+                                var idx = ((workspace.views[parentId] || {}).childs || []).indexOf(ids[i][1]);
+                                // delete instance from parent
+                                if (idx >= 0) workspace.views[parentId].childs.splice(idx, 1);
+                                // delete node
+                                delete workspace.views[ids[i][1]];
+                            }
                         }
-                    };
-                    // get child ids
-                    getChildIds(id, instance.__trigger);
-                    // delete child nodes
-                    for (var i in ids) {
-                        // get parent id
-                        var parentId = workspace.tree[ids[i][1]].paths.node[workspace.tree[ids[i][1]].paths.node.length - 1];
-                        // parent node exists
-                        if (parentId) {
-                            // get child index
-                            var idx = (((workspace.tree[parentId] || {}).childs || {})[ids[i][0]] || []).indexOf(ids[i][1]);
-                            // delete instance from parent
-                            if (idx >= 0) workspace.tree[parentId].childs[ids[i][0]].splice(idx, 1);
-                            // delete node
-                            delete workspace.tree[ids[i][1]];
-                        }
-                        // get parent id
-                        parentId = (workspace.views[ids[i][1]] || {}).parent;
-                        // parent view exists
-                        if (parentId) {
-                            // get child index
-                            var idx = ((workspace.views[parentId] || {}).childs || []).indexOf(ids[i][1]);
-                            // delete instance from parent
-                            if (idx >= 0) workspace.views[parentId].childs.splice(idx, 1);
-                            // delete node
-                            delete workspace.views[ids[i][1]];
-                        }
+                        // delete from alias container
+                        delete workspace.aliases[alias][id];
                     }
-                    // delete from alias container
-                    delete workspace.aliases[alias][id];
                     // append new props to original prop data container
                     for (var key in props) oriProps[key] = props[key];
                     console.log("[debug] create new view:", type, props);

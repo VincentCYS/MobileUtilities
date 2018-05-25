@@ -376,6 +376,7 @@ module.exports  = function(g, t) {
                     delete workspace.aliases[alias][id];
                     // append new props to original prop data container
                     for (var key in props) oriProps[key] = props[key];
+                    console.log("[debug] create new view:", type, props);
                     // reload
                     new (Function.prototype.bind.call(cls, null, caller, oriProps));
                     // callback

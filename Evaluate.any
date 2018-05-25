@@ -34,7 +34,7 @@ module.exports  = function(str, data) {
                     // string? substr
                     if (typeof value != "object" && values.length <= 2) {
                         // is it a number?
-                        if (typeof value == "number") {
+                        if (typeof value == "number" || !isNaN(parseFloat(value))) {
                             // split number
                             value = value.toString().split(".");
                             // only get the real number

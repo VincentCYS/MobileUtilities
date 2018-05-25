@@ -324,7 +324,11 @@ module.exports  = function(g, t) {
                         var style = props, validStyle = closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.validAttributes.style;
                         props = {};
                         props.style = {};
-                        console.log("[debug] valid style:", validStyle);
+                        for (var key in style) {
+                            if (typeof validStyle[key] != "undefined") {
+                                console.log("[debug] valid style:", closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.NativeProps);
+                            }
+                        }
                     }
                     // update view
                     closestView.setState && closestView.setState(props, function() {

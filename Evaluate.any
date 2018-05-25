@@ -27,6 +27,7 @@ module.exports  = function(str, data) {
             while (value && args.length > 0) {
                 // get key
                 var key = args.shift();
+                console.log("[debug] checking key:", key);
                 // is it an array?
                 if (/^\[.*\]$/i.test(key)) {
                     // setup an array for storing selected rows

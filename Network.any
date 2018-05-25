@@ -319,6 +319,12 @@ module.exports  = function(g, t) {
                 var props = /^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body);
                 // reload action (only available for view)
                 if (/^put$/i.test(g.method) && /^view$/i.test(type)) {
+                    // update style?
+                    if (/^style$/i.test(uri[0]||"") && /^view$/i.test(type)) {
+                        var style = props;
+                        props = {};
+                        props.style = style;
+                    }
                     // update view
                     closestView.setState && closestView.setState(props, function() {
                         this.active();
@@ -379,12 +385,14 @@ module.exports  = function(g, t) {
                     }
                     // append new props to original prop data container
                     for (var key in props) oriProps[key] = props[key];
-                    console.log("[debug] create new view:", type, props);
                     // reload
                     new (Function.prototype.bind.call(cls, null, caller, oriProps));
                     // callback
                     t.succeeded && t.succeeded();
                 }
+            // delete node
+            } else if (/^delete$/i.test(g.method)) {
+
             }
         }
     // http by default

@@ -32,7 +32,7 @@ module.exports  = function(str, data) {
                     // get values
                     var values = key.substr(1, key.length - 2).split(',').filter(n => n);
                     // string? substr
-                    if (typeof value == "string" && values.length <= 2) {
+                    if (typeof value != "object" && values.length <= 2) {
                         // update value
                         value = values[1] ? value.substr(values[0], values[1]) : value.substring(values[0]);
                     // the rest

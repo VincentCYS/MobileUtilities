@@ -25,7 +25,7 @@ module.exports  = function(str, data) {
             var args = object.split('.');
             // search values
             while (value && args.length > 0) {
-                console.log("[debug] first result:", key);
+                console.log("[debug] key checking:", key);
                 // get key
                 var key = args.shift();
                 // is it an array?

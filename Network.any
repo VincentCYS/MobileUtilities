@@ -265,9 +265,11 @@ module.exports  = function(g, t) {
                     });
                 // get data
                 } else {
-                    console.log("[debug] reading data:", uri.join("."), data);
+                    // get exactly data
+                    if (uri.length) data = evaluate("${" + uri.join(".") + "}", data);
+                    console.log("[debug] reading data:", data);
                     // get all : get specified
-                    t.succeeded && t.succeeded(!uri.length ? data : evaluate("${" + uri.join(".") + "}", data));
+                    t.succeeded && t.succeeded(data);
                 }
             }
         });

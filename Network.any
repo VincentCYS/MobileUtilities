@@ -177,8 +177,7 @@ module.exports  = function(g, t) {
         })
     // local storage
     } else if (/^app:\/\//i.test(k)) {
-        var appId = 'APP';
-        console.log("[debug] check global: ", global.__project);
+        var appId = 'APP_' + ((global.__project || {}).id || "") + ":";
         // get address
         var uri = (k.substring(6) || "").split("/").filter(function(n) { return n });
         // fetch app data for reference
@@ -240,7 +239,6 @@ module.exports  = function(g, t) {
                         rows = evaluate("${" + key + "}", data);
                         // not an array?
                         if (!Array.isArray(rows)) rows = [];
-                        console.log("[debug] existing data:", rows);
                         // append index for creating new row
                         uri.push(rows.length);
                     }
@@ -258,7 +256,6 @@ module.exports  = function(g, t) {
                         row[prefix][i] = rows[i];
                         formData.push(qs.stringify(row).replace(/%5B/g, '[').replace(/%5D/g, ']'));
                     }
-                    console.log("[debug] adjusted rows:", formData);
                     // convert to json format
                     formData = qs.parse(formData.join("&"));
                     // save data
@@ -268,6 +265,7 @@ module.exports  = function(g, t) {
                     });
                 // get data
                 } else {
+                    console.log("[debug] reading data:", uri.join("."), data);
                     // get all : get specified
                     t.succeeded && t.succeeded(!uri.length ? data : evaluate("${" + uri.join(".") + "}", data));
                 }

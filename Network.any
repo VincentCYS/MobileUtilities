@@ -316,8 +316,7 @@ module.exports  = function(g, t) {
             // reload or start new action
             } else if (/^post|put$/i.test(g.method)) {
                 // process form data
-                var props = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body)).split("&").filter(function(n){return n});
-                console.log("[debug] update view:", type, workspace.views[id].type, props);
+                var props = /^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body);
                 // reload action (only available for view)
                 if (/^put$/i.test(g.method) && /^view$/i.test(type)) {
                     // update view

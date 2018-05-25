@@ -297,7 +297,7 @@ module.exports  = function(g, t) {
                 // view
                 } else {
                     // get info
-                    __rN.UIManager.measure(__rN.findNodeHandle(view), function(x, y, width, height, pageX, pageY) {
+                    __rN.UIManager.measure(__rN.findNodeHandle(closestView), function(x, y, width, height, pageX, pageY) {
                         // append view info to data container
                         data.view = {
                             x       : x,

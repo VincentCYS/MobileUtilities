@@ -27,13 +27,16 @@ module.exports  = function(str, data) {
             while (value && args.length > 0) {
                 // get key
                 var key = args.shift();
-                console.log("[debug] key check:", key, object);
                 // is it an array?
                 if (/^\[.*\]$/i.test(key)) {
                     // setup an array for storing selected rows
                     var arr = [];
                     // get values
                     var values = key.substr(1, key.length - 2).split(',').filter(n => n);
+                    
+                    console.log("[debug] key check:", key, values, value);
+
+
                     // process values
                     for (var valI in values) {
                         // get index
@@ -46,6 +49,7 @@ module.exports  = function(str, data) {
                     }
                     // update value
                     value = arr.length > 0 ? arr : null;
+
                 // find column
                 } else if (Array.isArray(value) && typeof value[key] == "undefined") {
                     // get path

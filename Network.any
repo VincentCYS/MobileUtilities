@@ -321,14 +321,20 @@ module.exports  = function(g, t) {
                 if (/^put$/i.test(g.method) && /^view$/i.test(type)) {
                     // update style?
                     if ((/^style$/i.test(uri[0]||"") || (!isNaN(parseInt(uri[0])) && /^style$/i.test(uri[1]||""))) && /^view$/i.test(type)) {
-                        var style = props, validStyle = closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.validAttributes.style;
+                        var style = props, validStyle = closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.validAttributes.style, convertors = {
+                            float   : parseFloat,
+                            NSString: toString
+                        };
                         props = {};
                         props.style = {};
                         for (var key in style) {
                             if (typeof validStyle[key] != "undefined") {
-                                console.log("[debug] valid style:", closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.NativeProps);
+                                // get convertor
+                                var convertor = convertors[closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.NativeProps[key]] || toString;
+                                props.style[key] = convertor(style[key]);
                             }
                         }
+                        console.log("[debug] valid style:", props);
                     }
                     // update view
                     closestView.setState && closestView.setState(props, function() {

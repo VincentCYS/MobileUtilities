@@ -348,7 +348,7 @@ module.exports  = function(g, t) {
                     // get instance
                     var instance = workspace.tree[id].instance;
                     // get caller
-                    var caller = instance.__caller;
+                    var caller = /^put$/i.test(g.method) ? instance.__caller : arguments.callee.caller;
                     // get original props
                     var oriProps = JSON.parse(JSON.stringify(instance.__props));
                     /*

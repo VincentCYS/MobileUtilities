@@ -8,7 +8,7 @@ var evaluate    = require(10023);
 module.exports  = function(g, t) {
     var k = g.url || "";
     // invalid format
-    if (!k.length || !/^(ble|https?|wss?|contacts|db|app):\/\//i.test(k)) {
+    if (!k.length || !/^(ble|https?|wss?|contacts|db|app|clipboard):\/\//i.test(k)) {
         // return error
         t.failed && t.failed("Required address is invalid.");
     // bluetooth
@@ -405,6 +405,19 @@ module.exports  = function(g, t) {
             } else if (/^delete$/i.test(g.method)) {
 
             }
+        }
+    } else if (/^clipboard:\/\//i.test(k)) {
+        // get info
+        if (/^get$/i.test(g.method)) {
+            __rN.Clipboard.getString(function(res) {
+                console.log("[debug] text from clipboard: ", res);
+            });
+        } else {
+            // get text
+            var text = /^delete$/i.test(g.method) ? "" : (k.substring(12) || "");
+            __rN.Clipboard.setString(text);
+            // callback
+            t.succeeded && t.succeeded();
         }
     // http by default
     } else {

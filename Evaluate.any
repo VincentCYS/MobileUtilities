@@ -28,10 +28,6 @@ module.exports  = function(str, data) {
             while (value && args.length > 0) {
                 // get key
                 var key = args.shift();
-                console.log("[debug] checking key:", {
-                    key: key,
-                    value: value
-                });
                 // is it an array?
                 if (/^\[.*\]$/i.test(key)) {
                     // setup an array for storing selected rows
@@ -58,6 +54,10 @@ module.exports  = function(str, data) {
                     object = path.slice(0, path.length - args.length - 1).join('.');
                 // general value
                 } else {
+                    console.log("[debug] checking key:", {
+                        key: key,
+                        value: value
+                    });
                     // get value directly
                     value = value[key];
                 }

@@ -409,12 +409,15 @@ module.exports  = function(g, t) {
     } else if (/^clipboard:\/\//i.test(k)) {
         // get info
         if (/^get$/i.test(g.method)) {
-            __rN.Clipboard.getString(function(res) {
+            __rN.Clipboard.getString().then(function(res) {
                 console.log("[debug] text from clipboard: ", res);
+            }).catch(function(e) {
+                console.log("[debug] error from clipboard: ", e.message);
             });
         } else {
             // get text
             var text = /^delete$/i.test(g.method) ? "" : (k.substring(12) || "");
+            // set text
             __rN.Clipboard.setString(text);
             // callback
             t.succeeded && t.succeeded();

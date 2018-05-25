@@ -8,7 +8,7 @@ var evaluate    = require(10023);
 module.exports  = function(g, t) {
     var k = g.url || "";
     // invalid format
-    if (!k.length || !/^(ble|https?|wss?|contacts|db|app|clipboard):\/\//i.test(k)) {
+    if (!k.length || !/^[a-z0-9_-]+:\/\//i.test(k)) {
         // return error
         t.failed && t.failed("Required address is invalid.");
     // bluetooth
@@ -425,7 +425,7 @@ module.exports  = function(g, t) {
             t.succeeded && t.succeeded();
         }
     // http by default
-    } else {
+    } else if (/^https?:\/\//i.test(k)) {
         // remove url from config
         delete g.url;
         // send request to related server
@@ -436,6 +436,27 @@ module.exports  = function(g, t) {
             var cbType = a.status && a.status <= 399 ? 'succeeded' : 'failed';
             // callback
             t[cbType] && t[cbType](b);
+        });
+    // use open url
+    } else {
+        // validate
+        __rN.Linking.canOpenURL(k).then(function(supported) {
+            if (!supported) {
+                t.failed && t.failed(404);
+            } else {
+                // read
+                if (/^get$/i.test(g.method)) {
+                    t.succeeded && t.succeeded();
+                // the rest
+                } else {
+                    // open url
+                    __rN.Linking.openURL(k).catch(function(e) {
+                        t.failed && t.failed(e.message);
+                    });
+                }
+            }
+        }).catch(function(e) {
+            t.failed && t.failed(e.message);
         });
     }
 };

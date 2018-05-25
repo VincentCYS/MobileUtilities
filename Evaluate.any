@@ -17,6 +17,7 @@ module.exports  = function(str, data) {
         for (var oI in objects) {
             // get object
             var object = objects[oI];
+            console.log("[debug] checking object:", object);
             // create alias
             var alias = `~~${[qI, oI].join('~')}~~`;
             // setup value container

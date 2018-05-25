@@ -8,7 +8,7 @@ var evaluate    = require(10023);
 module.exports  = function(g, t) {
     var k = g.url || "";
     // invalid format
-    if (!k.length || !/^(ble|https?|wss?|contacts|app|coms):\/\//i.test(k)) {
+    if (!k.length || !/^(ble|https?|wss?|contacts|db|app):\/\//i.test(k)) {
         // return error
         t.failed && t.failed("Required address is invalid.");
     // bluetooth
@@ -176,10 +176,10 @@ module.exports  = function(g, t) {
             }
         })
     // local storage
-    } else if (/^app:\/\//i.test(k)) {
+    } else if (/^db:\/\//i.test(k)) {
         var appId = 'APP_' + ((global.__project || {}).id || "") + ":";
         // get address
-        var uri = (k.substring(6) || "").split("/").filter(function(n){return n});
+        var uri = (k.substring(5) || "").split("/").filter(function(n){return n});
         // fetch app data for reference
         __rN.AsyncStorage.getItem(appId, function(err, result) {
             // callback type
@@ -273,29 +273,33 @@ module.exports  = function(g, t) {
             }
         });
     // components
-    } else if (/^coms:\/\//i.test(k)) {
+    } else if (/^app:\/\//i.test(k)) {
         // get address
-        var uri = (k.substring(7) || "").split("/").filter(function(n){return n});
+        var uri = (k.substring(6) || "").split("/").filter(function(n){return n});
         // make sure alias is provided
         if (uri.length && (workspace.aliases[uri[0]] || []).length) {
             // get component alias id
             var alias = uri.shift();
             // get exactly id
             var id = workspace.aliases[alias][workspace.aliases[alias].length - 1];
+            // get closest view
+            var closestView = workspace.tree[id].dom();
+            // get component type
+            var type = closestView.id != id ? "node" : "view";
             // get info
             if (/^get$/i.test(g.method)) {
                 // create data container
                 var data = {};
-                // get closest view
-                var closestView = workspace.tree[id].dom();
                 // get props
                 for (var key in ((workspace.tree[id].instance || {}).__props || {})) data[key] = workspace.tree[id].instance.__props[key];
                 // node
-                if (closestView.id != id) {
+                if (/^node$/i.test(type)) {
                     // callback with props
                     t.succeeded && t.succeeded(data);
                 // view
                 } else {
+                    // append state info
+
                     // get info
                     __rN.UIManager.measure(__rN.findNodeHandle(closestView), function(x, y, width, height, pageX, pageY) {
                         // append view info to data container
@@ -309,8 +313,74 @@ module.exports  = function(g, t) {
                         t.succeeded && t.succeeded(data);
                     });
                 }
+            // reload or start new action
             } else if (/^post|put$/i.test(g.method)) {
-
+                // process form data
+                var props = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body)).split("&").filter(function(n){return n});
+                // reload action (only available for view)
+                if (/^put$/i.test(g.method) && /^view$/i.test(type)) {
+                    // update view
+                    closestView.setState && closestView.setState(props, function() {
+                        this.active();
+                        t.succeeded && t.succeeded();
+                    });
+                // new action
+                } else {
+                    // get class
+                    var cls = workspace.tree[id].class;
+                    // get instance
+                    var instance = workspace.tree[id].instance;
+                    // get caller
+                    var caller = instance.__caller;
+                    // get original props
+                    var oriProps = JSON.parse(JSON.stringify(instance.__props));
+                    // get ids that need to clear
+                    var ids = [], getChildIds = function(nId, trigger) {
+                        ids.unshift([trigger, nId]);
+                        if (workspace.tree[nId]) {
+                            for (var t in workspace.tree[nId].childs) {
+                                for (var cIdx in workspace.tree[nId].childs[t]) {
+                                    getChildIds(workspace.tree[nId].childs[t][cIdx], t);
+                                }
+                            }
+                        }
+                    };
+                    // get child ids
+                    getChildIds(id, instance.__trigger);
+                    // delete child nodes
+                    for (var i in ids) {
+                        // get parent id
+                        var parentId = workspace.tree[ids[i][1]].paths.node[workspace.tree[ids[i][1]].paths.node.length - 1];
+                        // parent node exists
+                        if (parentId) {
+                            // get child index
+                            var idx = (((workspace.tree[parentId] || {}).childs || {})[ids[i][0]] || []).indexOf(ids[i][1]);
+                            // delete instance from parent
+                            if (idx >= 0) workspace.tree[parentId].childs[ids[i][0]].splice(idx, 1);
+                            // delete node
+                            delete workspace.tree[ids[i][1]];
+                        }
+                        // get parent id
+                        parentId = (workspace.views[ids[i][1]] || {}).parent;
+                        // parent view exists
+                        if (parentId) {
+                            // get child index
+                            var idx = ((workspace.views[parentId] || {}).childs || []).indexOf(ids[i][1]);
+                            // delete instance from parent
+                            if (idx >= 0) workspace.views[parentId].childs.splice(idx, 1);
+                            // delete node
+                            delete workspace.views[ids[i][1]];
+                        }
+                    }
+                    // delete from alias container
+                    delete workspace.aliases[alias][id];
+                    // append new props to original prop data container
+                    for (var key in props) oriProps[key] = props[key];
+                    // reload
+                    new (Function.prototype.bind.call(cls, null, caller, oriProps));
+                    // callback
+                    t.succeeded && t.succeeded();
+                }
             }
         }
     // http by default

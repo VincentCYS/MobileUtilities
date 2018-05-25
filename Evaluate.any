@@ -34,7 +34,7 @@ module.exports  = function(str, data) {
                     // get values
                     var values = key.substr(1, key.length - 2).split(',').filter(n => n);
                     
-                    console.log("[debug] key check:", key, values, value);
+                    console.log("[debug] key check:", values, typeof value);
 
 
                     // process values

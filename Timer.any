@@ -1,4 +1,8 @@
 /* a:instance, b:callbacks */
 module.exports  = function(a, b) {
-
+    var duration = parseInt(a.__props.duration || '1000');
+    b.started && b.started();
+    setTimeout(function() {
+        b.stopped && b.stopped();
+    }, duration);
 };

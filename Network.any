@@ -322,7 +322,9 @@ module.exports  = function(g, t) {
                     // update style?
                     if ((/^style$/i.test(uri[0]||"") || (!isNaN(parseInt(uri[0])) && /^style$/i.test(uri[1]||""))) && /^view$/i.test(type)) {
                         var style = props, validStyle = closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.validAttributes.style, convertors = {
-                            float   : parseFloat
+                            float       : parseFloat,
+                            CGFloat     : parseFloat,
+                            NSInteger   : parseInt
                         };
                         props = {};
                         props.style = {};
@@ -333,7 +335,6 @@ module.exports  = function(g, t) {
                                 props.style[key] = convertor ? convertor(style[key]) : style[key].toString();
                             }
                         }
-                        console.log("[debug] valid style:", props);
                     }
                     // update view
                     closestView.setState && closestView.setState(props, function() {

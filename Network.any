@@ -267,7 +267,6 @@ module.exports  = function(g, t) {
                 } else {
                     // get exactly data
                     if (uri.length) data = evaluate("${" + uri.join(".") + "}", data);
-                    console.log("[debug] reading data:", data);
                     // get all : get specified
                     t.succeeded && t.succeeded(data);
                 }

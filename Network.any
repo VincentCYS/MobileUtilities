@@ -8,7 +8,7 @@ var evaluate    = require(10023);
 module.exports  = function(g, t) {
     var k = g.url || "";
     // invalid format
-    if (!k.length || !/^[a-z0-9_-]+:\/\//i.test(k)) {
+    if (!k.length || !/^[a-z0-9_-]+:(\/\/)?/i.test(k)) {
         // return error
         t.failed && t.failed("Required address is invalid.");
     // bluetooth

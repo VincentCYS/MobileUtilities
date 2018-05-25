@@ -25,6 +25,7 @@ module.exports  = function(str, data) {
             var args = object.split('.');
             // search values
             while (value && args.length > 0) {
+                console.log("[debug] first result:", key);
                 // get key
                 var key = args.shift();
                 // is it an array?
@@ -56,7 +57,6 @@ module.exports  = function(str, data) {
                     // get value directly
                     value = value[key];
                 }
-                console.log("[debug] first result:", value);
             }
             // is it an object?
             if (typeof value == "object" && str != '${' + object + '}') {

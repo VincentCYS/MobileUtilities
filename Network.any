@@ -232,6 +232,7 @@ module.exports  = function(g, t) {
                     if (/^put$/i.test(g.method) && !isNaN(parseInt(uri[uri.length - 1]))) {
                         // get index
                         idx = uri.pop();
+                        console.log("[debug] check update url:", [prefix].concat(uri).join("."));
                         // get rows
                         rows = evaluate([prefix].concat(uri).join("."), data);
                         // add the index back

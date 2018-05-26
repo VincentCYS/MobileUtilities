@@ -259,6 +259,8 @@ module.exports  = function(g, t) {
                         field[0] = prefix + (uri.length ? "[" + uri.join("][") + "]" : "") + field[0];
                         formData[i] = field.join("=");
                     }
+                    // move back to upper layer
+                    if (/^put$/i.test(g.method)) prefix = prefix.replace(/\[[0-9]+\]$/, '');
                     console.log("[debug] check form data before adding rows:", prefix);
                     // append rows to form data
                     for (var i in rows) {

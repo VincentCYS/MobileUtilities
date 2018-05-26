@@ -325,14 +325,15 @@ module.exports  = function(g, t) {
                             float       : parseFloat,
                             CGFloat     : parseFloat,
                             NSInteger   : parseInt
+                        }, extra = {
+                            fontSize    : "float"
                         };
                         props = {};
                         props.style = {};
                         for (var key in style) {
                             if (typeof validStyle[key] != "undefined") {
                                 // get convertor
-                                console.log("[debug] hi there:", closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.NativeProps[key]);
-                                var convertor = convertors[closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.NativeProps[key]];
+                                var convertor = convertors[closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.NativeProps[key]||extra[key]];
                                 props.style[key] = convertor ? convertor(style[key]) : style[key].toString();
                             }
                         }

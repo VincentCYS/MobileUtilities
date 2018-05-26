@@ -232,7 +232,6 @@ module.exports  = function(g, t) {
                     if (/^put$/i.test(g.method) && !isNaN(parseInt(uri[uri.length - 1]))) {
                         // get index
                         idx = uri.pop();
-                        console.log("[debug] check update url:", [prefix].concat(uri).join("."));
                         // get rows
                         rows = evaluate([prefix].concat(uri).join("."), data);
                         // add the index back
@@ -242,7 +241,6 @@ module.exports  = function(g, t) {
                     prefix += (uri.length ? "[" + uri.join("][") + "]" : "");
                     // clear uri
                     uri = [];
-                    console.log("[debug] check form data:", prefix);
                     // insert data
                     if (/^post$/i.test(g.method)) {
                         // convert prefix formart from query string to json as pointing key
@@ -261,6 +259,7 @@ module.exports  = function(g, t) {
                         field[0] = prefix + (uri.length ? "[" + uri.join("][") + "]" : "") + field[0];
                         formData[i] = field.join("=");
                     }
+                    console.log("[debug] check form data before adding rows:", formData);
                     // append rows to form data
                     for (var i in rows) {
                         if (i != idx) {

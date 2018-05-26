@@ -331,6 +331,7 @@ module.exports  = function(g, t) {
                         for (var key in style) {
                             if (typeof validStyle[key] != "undefined") {
                                 // get convertor
+                                NSLog("[debug] hi there:", closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.NativeProps[key]);
                                 var convertor = convertors[closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.NativeProps[key]];
                                 props.style[key] = convertor ? convertor(style[key]) : style[key].toString();
                             }

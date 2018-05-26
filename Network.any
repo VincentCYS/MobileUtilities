@@ -329,7 +329,7 @@ module.exports  = function(g, t) {
                             fontSize    : "float"
                         };
                         props = {};
-                        props.style = /^put$/i.test(g.method) ? (closestView.state.style || {}) : {};
+                        props.style = /^put$/i.test(g.method) ? JSON.parse(JSON.stringify(closestView.state.style || {})) : {};
                         for (var key in style) {
                             if (typeof validStyle[key] != "undefined") {
                                 // get convertor

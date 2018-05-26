@@ -259,7 +259,7 @@ module.exports  = function(g, t) {
                         field[0] = prefix + (uri.length ? "[" + uri.join("][") + "]" : "") + field[0];
                         formData[i] = field.join("=");
                     }
-                    console.log("[debug] check form data before adding rows:", formData);
+                    console.log("[debug] check form data before adding rows:", prefix);
                     // append rows to form data
                     for (var i in rows) {
                         if (i != idx) {

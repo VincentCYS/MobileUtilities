@@ -241,6 +241,7 @@ module.exports  = function(g, t) {
                     prefix += (uri.length ? "[" + uri.join("][") + "]" : "");
                     // clear uri
                     uri = [];
+                    console.log("[debug] check form data:", prefix);
                     // insert data
                     if (/^post$/i.test(g.method)) {
                         // convert prefix formart from query string to json as pointing key

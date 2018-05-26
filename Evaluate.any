@@ -18,7 +18,7 @@ module.exports  = function(str, data) {
             // get object
             var object = objects[oI];
             // create alias
-            var alias = `~~${[qI, oI].join('~')}~~`;
+            var alias = "~~" + [qI, oI].join('~') + "~~";
             // setup value container
             var value = data;
             // get args
@@ -30,7 +30,7 @@ module.exports  = function(str, data) {
                 // is it an array?
                 if (/^\[.*\]$/i.test(key)) {
                     // get values
-                    var values = key.substr(1, key.length - 2).split(',').filter(n => n);
+                    var values = key.substr(1, key.length - 2).split(',').filter(function(n){return n});
                     // string? substr
                     if (typeof value != "object" && values.length <= 2) {
                         // is it a number?
@@ -219,7 +219,7 @@ module.exports  = function(str, data) {
                 // append digits to real number
                 for (var dpC = 0; dpC < length; dpC++) realNumber[1] += args[0][dpC] || '0';
                 // replace variable
-                expression = expression.replace(dpq, realNumber.filter(n => n).join('.'));
+                expression = expression.replace(dpq, realNumber.filter(function(n){return n}).join('.'));
             }
             // update string
             str = str.replace(query, expression);

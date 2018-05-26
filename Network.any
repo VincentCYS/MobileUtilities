@@ -228,12 +228,12 @@ module.exports  = function(g, t) {
                     var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body)).split("&").filter(function(n){return n});
                     // extract prefix
                     var prefix = uri.shift();
+                    // adjust prefix
+                    prefix += (uri.length ? "[" + uri.join("][") + "]" : "");
+                    // clear uri
+                    uri = [];
                     // insert data
                     if (/^post$/i.test(g.method)) {
-                        // adjust prefix
-                        prefix += (uri.length ? "[" + uri.join("][") + "]" : "");
-                        // clear uri
-                        uri = [];
                         // convert prefix formart from query string to json as pointing key
                         var key = prefix.replace(/(\]\[|\[)/g, '.').replace(/\]$/, '');
                         // get reference
@@ -257,9 +257,9 @@ module.exports  = function(g, t) {
                             formData.push(qs.stringify(row).replace(/%5B/g, '[').replace(/%5D/g, ']'));
                         }
                     }
+                    console.log("[debug] check form data:", formData, prefix);
                     // convert to json format
                     formData = qs.parse(formData.join("&"));
-                    console.log("[debug] check form data:", formData);
                     // save data
                     __rN.AsyncStorage.mergeItem(appId, JSON.stringify(formData), function() {
                         // get all : get specified

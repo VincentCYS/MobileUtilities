@@ -223,11 +223,20 @@ module.exports  = function(g, t) {
                 // save data
                 } else if (/^post|put$/i.test(g.method)) {
                     // setup container
-                    var rows = [];
+                    var rows = [], idx = -1;
                     // process form data
                     var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body)).split("&").filter(function(n){return n});
                     // extract prefix
                     var prefix = uri.shift();
+                    // update array data
+                    if (/^put$/i.test(g.method) && !isNaN(parseInt(uri[uri.length - 1]))) {
+                        // get index
+                        idx = uri.pop();
+                        // get rows
+                        rows = evaluate([prefix].concat(uri).join("."), data);
+                        // add the index back
+                        uri.push(idx);
+                    }
                     // adjust prefix
                     prefix += (uri.length ? "[" + uri.join("][") + "]" : "");
                     // clear uri
@@ -252,10 +261,12 @@ module.exports  = function(g, t) {
                     }
                     // append rows to form data
                     for (var i in rows) {
-                        var row = {};
-                        row[prefix] = {};
-                        row[prefix][i] = rows[i];
-                        formData.push(qs.stringify(row).replace(/%5B/g, '[').replace(/%5D/g, ']'));
+                        if (i != idx) {
+                            var row = {};
+                            row[prefix] = {};
+                            row[prefix][i] = rows[i];
+                            formData.push(qs.stringify(row).replace(/%5B/g, '[').replace(/%5D/g, ']'));
+                        }
                     }
                     // convert to json format
                     formData = qs.parse(formData.join("&"));

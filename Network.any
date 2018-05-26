@@ -243,7 +243,6 @@ module.exports  = function(g, t) {
                         // append index for creating new row
                         uri.push(rows.length);
                     }
-                    console.log("[debug] check form data here: ", formData, prefix);
                     // add prefix for form data
                     for (var i in formData) {
                         var field = formData[i].split("="), sprt = field[0].indexOf("[");
@@ -251,6 +250,7 @@ module.exports  = function(g, t) {
                         field[0] = prefix + (uri.length ? "[" + uri.join("][") + "]" : "") + field[0];
                         formData[i] = field.join("=");
                     }
+                    console.log("[debug] check form data here: ", formData, rows);
                     // append rows to form data
                     for (var i in rows) {
                         var row = {};

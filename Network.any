@@ -242,27 +242,24 @@ module.exports  = function(g, t) {
                         if (!Array.isArray(rows)) rows = [];
                         // append index for creating new row
                         uri.push(rows.length);
-                    // update data, get existing records
-                    } else {
-                        console.log("[debug] check form data here: ", formData, rows);
-                    }
-                    // add prefix for form data
-                    for (var i in formData) {
-                        var field = formData[i].split("="), sprt = field[0].indexOf("[");
-                        field[0] = sprt >= 0 ? "[" + field[0].substr(0, sprt) + "]" + field[0].substring(sprt) : "[" + field[0] + "]";
-                        field[0] = prefix + (uri.length ? "[" + uri.join("][") + "]" : "") + field[0];
-                        formData[i] = field.join("=");
-                    }
-                    console.log("[debug] check form data here: ", data, [prefix].concat(uri));
-                    // append rows to form data
-                    for (var i in rows) {
-                        var row = {};
-                        row[prefix] = {};
-                        row[prefix][i] = rows[i];
-                        formData.push(qs.stringify(row).replace(/%5B/g, '[').replace(/%5D/g, ']'));
+                        // add prefix for form data
+                        for (var i in formData) {
+                            var field = formData[i].split("="), sprt = field[0].indexOf("[");
+                            field[0] = sprt >= 0 ? "[" + field[0].substr(0, sprt) + "]" + field[0].substring(sprt) : "[" + field[0] + "]";
+                            field[0] = prefix + (uri.length ? "[" + uri.join("][") + "]" : "") + field[0];
+                            formData[i] = field.join("=");
+                        }
+                        // append rows to form data
+                        for (var i in rows) {
+                            var row = {};
+                            row[prefix] = {};
+                            row[prefix][i] = rows[i];
+                            formData.push(qs.stringify(row).replace(/%5B/g, '[').replace(/%5D/g, ']'));
+                        }
                     }
                     // convert to json format
                     formData = qs.parse(formData.join("&"));
+                    console.log("[debug] check form data:", formData);
                     // save data
                     __rN.AsyncStorage.mergeItem(appId, JSON.stringify(formData), function() {
                         // get all : get specified

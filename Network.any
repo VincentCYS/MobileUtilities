@@ -261,7 +261,6 @@ module.exports  = function(g, t) {
                     }
                     // move back to upper layer
                     if (/^put$/i.test(g.method)) prefix = prefix.replace(/\[[0-9]+\]$/, '');
-                    console.log("[debug] check form data before adding rows:", prefix);
                     // append rows to form data
                     for (var i in rows) {
                         if (i != idx) {
@@ -273,7 +272,6 @@ module.exports  = function(g, t) {
                     }
                     // convert to json format
                     formData = qs.parse(formData.join("&"));
-                    console.log("[debug] check form data:", formData);
                     // save data
                     __rN.AsyncStorage.mergeItem(appId, JSON.stringify(formData), function() {
                         // get all : get specified

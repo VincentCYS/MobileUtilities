@@ -1,8 +1,8 @@
 var workspace   = require("ANYWorkspace");
 var __rN        = require("ReactNative");
-var BLE         = require("BLE");
-var contacts    = require("Contacts");
-var qs          = require("QueryString");
+var BLE         = require("RNBleManager");
+var contacts    = require("RNContacts");
+var qs          = require("Qs");
 var evaluate    = require(10023);
 /* d:config, t:callbacks */
 module.exports  = function(g, t) {

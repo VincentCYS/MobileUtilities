@@ -14,6 +14,35 @@ module.exports  = function(g, t) {
     // bluetooth
     } else if (/^ble:\/\//i.test(k)) {
 
+    // web socket
+    } else if (/^wss?:\/\//i.test(k)) {
+
+    // contacts
+    } else if (/^contacts:\/\//i.test(k)) {
+        contacts.checkPermission(function(pmErr, permission) {
+            if (permission === 'authorized') {
+                // read contacts
+                if (/^get$/i.test(g.method)) {
+                    contacts.getAll(function(err, contacts) {
+                        // callback type
+                        if (err) {
+                            // callback
+                            t.failed && t.failed(err.message);
+                        } else {
+                            // get address
+                            var uri = (k.substring(11) || "").split("/").filter(function(n) { return n });
+                            // get all : get specified
+                            t.succeeded && t.succeeded(!uri.length ? contacts : evaluate("${" + uri.join(".") + "}", contacts));
+                        }
+                    });
+                // add contact
+                } else if (/^post$/i.test(g.method)) {
+
+                }
+            } else {
+                t.failed && t.failed((pmErr || {}).message);
+            }
+        });
     } else {
 
     }

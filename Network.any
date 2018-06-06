@@ -11,7 +11,10 @@ module.exports  = function(g, t) {
     if (!k.length || !/^[a-z0-9_-]+:(\/\/)?/i.test(k)) {
         // return error
         t.failed && t.failed("Required address is invalid.");
+    // bluetooth
+    } else if (/^ble:\/\//i.test(k)) {
+
     } else {
-        
+
     }
 };

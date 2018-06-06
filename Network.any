@@ -13,13 +13,13 @@ module.exports  = function(g, t) {
         t.failed && t.failed("Required address is invalid.");
     // bluetooth
     } else if (/^ble:\/\//i.test(k)) {
-        /*
         // get splitted path
         var uri = k.substring(6).split('/') || [], args = {};
         // get device id
         var deviceId = uri.shift();
         // get args
         while (uri.length > 0) args[uri.shift()] = uri.shift();
+        /*
         // setup bluetooth variables
         var u = new __rN.NativeEventEmitter(__rN.NativeModules.BleManager),
             v = {},

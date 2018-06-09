@@ -354,6 +354,7 @@ module.exports  = function(g, t) {
                             }
                         }
                     }
+                    console.log("[network] test:", props);
                     // update view
                     closestView.setState && closestView.setState(props, function() {
                         this.active();

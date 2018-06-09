@@ -290,9 +290,9 @@ module.exports  = function(g, t) {
         });
     // components
     } else if (/^app:\/\//i.test(k)) {
-        console.log("[network] test url:", k, Object.keys(module.exports.caller.arguments[0]));
         // get address
         var uri = (k.substring(6) || "").split("/").filter(function(n){return n});
+        console.log("[network] test url:", uri, Object.keys(module.exports.caller.arguments[0].__caller));
         // make sure alias is provided
         if (uri.length && (workspace.aliases[uri[0]] || []).length) {
             // get component alias id

@@ -410,7 +410,7 @@ module.exports  = function(g, t) {
                             }
                         }
                         // delete from alias container
-                        delete workspace.aliases[alias][id];
+                        if (workspace.aliases[alias]) delete workspace.aliases[alias][id];
                     }
                     // append new props to original prop data container
                     for (var key in props) oriProps[key] = props[key];

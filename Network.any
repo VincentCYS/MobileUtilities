@@ -292,7 +292,7 @@ module.exports  = function(g, t) {
     } else if (/^app:\/\//i.test(k)) {
         // get address
         var uri = (k.substring(6) || "").split("/").filter(function(n){return n});
-        console.log("[network] test url:", uri, typeof module.exports.caller.arguments[0].dom());
+        console.log("[network] test url:", uri, typeof module.exports.caller.arguments[0].__id);
         // make sure alias is provided
         if (uri.length && (workspace.aliases[uri[0]] || []).length) {
             // get component alias id

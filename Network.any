@@ -446,7 +446,8 @@ module.exports  = function(g, t) {
     } else if (/^https?:\/\//i.test(k)) {
         // remove url from config
         delete g.url;
-        console.log("[network] test: ", g);
+        // remove body for get method
+        if (/^get$/i.test(g.method)) delete g.body;
         // send request to related server
         fetch(k, g).then(function(a) {
             b = null;

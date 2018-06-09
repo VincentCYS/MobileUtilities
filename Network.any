@@ -447,7 +447,7 @@ module.exports  = function(g, t) {
         // remove url from config
         delete g.url;
         // send request to related server
-        fetch(k).then(function(a) {
+        fetch(k, g).then(function(a) {
             b = null;
             try { b = JSON.parse(a._bodyInit) } catch(b) { b = a._bodyInit }
             // callback type

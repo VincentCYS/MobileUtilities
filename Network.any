@@ -292,11 +292,11 @@ module.exports  = function(g, t) {
     } else if (/^app:\/\//i.test(k)) {
         // get address
         var uri = (k.substring(6) || "").split("/").filter(function(n){return n});
+        console.log("[network] test url:", uri, Object.keys(module.exports.caller.arguments[0]));
         // make sure alias is provided
         if (uri.length && ((workspace.aliases[uri[0]] || []).length || /^\.\.\/i.test(uri.join('/')))) {
             // get component alias id
             var alias = uri.shift();
-            console.log("[network] test url:", Object.keys(module.exports.caller.arguments[0]));
             // get exactly id
             var id = /^\.\.$/i.test(alias) ? module.exports.caller.arguments[0].__id : workspace.aliases[alias][workspace.aliases[alias].length - 1];
             // get closest view

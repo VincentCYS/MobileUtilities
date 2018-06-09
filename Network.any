@@ -298,11 +298,10 @@ module.exports  = function(g, t) {
             var alias = uri.shift();
             // get exactly id
             var id = ".." == alias ? module.exports.caller.arguments[0].__id : workspace.aliases[alias][workspace.aliases[alias].length - 1];
-            console.log("[network] test url:", id, alias);
             // get closest view
             var closestView = workspace.tree[id].dom();
             // get component type
-            var type = (closestView || {}).id != id ? "node" : "view";
+            var type = workspace.views[id] ? "view" : "node";
             // get info
             if (/^get$/i.test(g.method)) {
                 // create data container

@@ -335,38 +335,42 @@ module.exports  = function(g, t) {
                     var instance = workspace.tree[targetedId].instance;
                     // update caller
                     caller = instance.__caller;
-                    console.log("[network] test:", props, __rN.ViewPropTypes.style());
                     // update style?
                     if (closestView && (/^style$/i.test(uri[0]||"") || (!isNaN(parseInt(uri[0])) && /^style$/i.test(uri[1]||""))) && /^view$/i.test(type)) {
-                        var style = props, convertors = {
+                        var style = props;
+                        // clear prop data container for storing style only
+                        props = {};
+                        props.style = /^put$/i.test(g.method) ? JSON.parse(JSON.stringify(closestView.state.style || {})) : {};
+                        for (var key in style) props.style[key] = style[key];
+                        
+                        /*{
+                            
+                                // get convertor
+                                //var convertor = convertors[closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.NativeProps[key]||extra[key]];
+                                //props.style[key] = convertor ? convertor(style[key]) : style[key].toString();
+                        }*/
+
+                        /*, convertors = {
                             float       : parseFloat,
                             CGFloat     : parseFloat,
                             NSInteger   : parseInt
                         }, extra = {
                             fontSize    : "float"
                         };
+                        */
                         // , validStyle = closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.validAttributes.style
-                        // clear prop data container for storing style only
-                        props = {};
-                        props.style = /^put$/i.test(g.method) ? JSON.parse(JSON.stringify(closestView.state.style || {})) : {};
-                        for (var key in style) {
-                            if (typeof validStyle[key] != "undefined") {
-                                // get convertor
-                                var convertor = convertors[closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.NativeProps[key]||extra[key]];
-                                props.style[key] = convertor ? convertor(style[key]) : style[key].toString();
-                            }
-                        }
                     }
-
-
-                    /*
-                    
-                    
                     // update view
                     closestView.setState && closestView.setState(props, function() {
                         this.active();
                         t.succeeded && t.succeeded();
                     });
+
+
+                    /*
+                    
+                    
+                    
 
 
                     // release node

@@ -336,7 +336,7 @@ module.exports  = function(g, t) {
                     // update caller
                     caller = instance.__caller;
                     // update style?
-                    if ((/^style$/i.test(uri[0]||"") || (!isNaN(parseInt(uri[0])) && /^style$/i.test(uri[1]||""))) && /^view$/i.test(type)) {
+                    if (closestView && (/^style$/i.test(uri[0]||"") || (!isNaN(parseInt(uri[0])) && /^style$/i.test(uri[1]||""))) && /^view$/i.test(type)) {
                         var style = props, validStyle = closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.validAttributes.style, convertors = {
                             float       : parseFloat,
                             CGFloat     : parseFloat,

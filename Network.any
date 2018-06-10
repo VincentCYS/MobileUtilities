@@ -322,84 +322,17 @@ module.exports  = function(g, t) {
             var type = workspace.views[targetedId] ? "view" : "node";
             // get closest view
             var closestView = workspace.tree[targetedId].dom();
-            console.log("[network] targeted id:", type, typeof closestView);
-        }
-
-
-        /*
-        // make sure alias is provided
-        if (uri.length && ((workspace.aliases[uri[0]] || []).length) || uri[0] == "..") {
-            // get exactly id
-            var id = ".." == alias ? module.exports.caller.arguments[0].__id : workspace.aliases[alias][workspace.aliases[alias].length - 1];
-            
             // get info
             if (/^get$/i.test(g.method)) {
-                // create data container
-                var data = {};
-                // get props
-                for (var key in ((workspace.tree[id].instance || {}).__props || {})) data[key] = workspace.tree[id].instance.__props[key];
-                // node
-                if (/^node$/i.test(type)) {
-                    // callback with props
-                    t.succeeded && t.succeeded(data);
-                // view
-                } else {
-                    // append state info
 
-                    // get info
-                    __rN.UIManager.measure(__rN.findNodeHandle(closestView), function(x, y, width, height, pageX, pageY) {
-                        // append view info to data container
-                        data.view = {
-                            x       : x,
-                            y       : y,
-                            width   : width,
-                            height  : height
-                        };
-                        // callback with info
-                        t.succeeded && t.succeeded(data);
-                    });
-                }
             // reload or start new action
             } else if (/^post|put$/i.test(g.method)) {
                 // process form data
                 var props = /^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body);
-                // reload action (only available for view)
-                if (/^put$/i.test(g.method) && /^view$/i.test(type)) {
-                    // update style?
-                    if ((/^style$/i.test(uri[0]||"") || (!isNaN(parseInt(uri[0])) && /^style$/i.test(uri[1]||""))) && /^view$/i.test(type)) {
-                        var style = props, validStyle = closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.validAttributes.style, convertors = {
-                            float       : parseFloat,
-                            CGFloat     : parseFloat,
-                            NSInteger   : parseInt
-                        }, extra = {
-                            fontSize    : "float"
-                        };
-                        props = {};
-                        props.style = /^put$/i.test(g.method) ? JSON.parse(JSON.stringify(closestView.state.style || {})) : {};
-                        for (var key in style) {
-                            if (typeof validStyle[key] != "undefined") {
-                                // get convertor
-                                var convertor = convertors[closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.NativeProps[key]||extra[key]];
-                                props.style[key] = convertor ? convertor(style[key]) : style[key].toString();
-                            }
-                        }
-                    }
-                    console.log("[network] test:", typeof closestView.setState);
-                    // update view
-                    closestView.setState && closestView.setState(props, function() {
-                        this.active();
-                        t.succeeded && t.succeeded();
-                    });
-                // new action
-                } else {
-                    // get class
-                    var cls = workspace.tree[id].class;
-                    // get instance
-                    var instance = workspace.tree[id].instance;
-                    // get caller
-                    var caller = /^put$/i.test(g.method) ? instance.__caller : module.exports.caller.arguments[0];
-                    // get original props
-                    var oriProps = JSON.parse(JSON.stringify(instance.__props));
+                // reload action
+                if (/^put$/i.test(g.method)) {
+                    // var caller = /^put$/i.test(g.method) ? instance.__caller : module.exports.caller.arguments[0];
+                    /*
                     // release node
                     if (/^node$/i.test(type) && /^put$/i.test(g.method)) {
                         // get ids that need to clear
@@ -443,6 +376,15 @@ module.exports  = function(g, t) {
                         // delete from alias container
                         if (workspace.aliases[alias]) delete workspace.aliases[alias][id];
                     }
+                    */
+                // new action
+                } else {
+                    // get class
+                    var cls = workspace.tree[targetedId].class;
+                    // get instance
+                    var instance = workspace.tree[targetedId].instance;
+                    // get original props
+                    var oriProps = JSON.parse(JSON.stringify(instance.__props));
                     // append new props to original prop data container
                     for (var key in props) oriProps[key] = props[key];
                     // reload
@@ -450,6 +392,86 @@ module.exports  = function(g, t) {
                     // callback
                     t.succeeded && t.succeeded();
                 }
+
+
+
+
+
+                /*
+                // reload action (only available for view)
+                if (/^put$/i.test(g.method) && /^view$/i.test(type)) {
+                    // update style?
+                    if ((/^style$/i.test(uri[0]||"") || (!isNaN(parseInt(uri[0])) && /^style$/i.test(uri[1]||""))) && /^view$/i.test(type)) {
+                        var style = props, validStyle = closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.validAttributes.style, convertors = {
+                            float       : parseFloat,
+                            CGFloat     : parseFloat,
+                            NSInteger   : parseInt
+                        }, extra = {
+                            fontSize    : "float"
+                        };
+                        props = {};
+                        props.style = /^put$/i.test(g.method) ? JSON.parse(JSON.stringify(closestView.state.style || {})) : {};
+                        for (var key in style) {
+                            if (typeof validStyle[key] != "undefined") {
+                                // get convertor
+                                var convertor = convertors[closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.NativeProps[key]||extra[key]];
+                                props.style[key] = convertor ? convertor(style[key]) : style[key].toString();
+                            }
+                        }
+                    }
+                    console.log("[network] test:", typeof closestView.setState);
+                    // update view
+                    closestView.setState && closestView.setState(props, function() {
+                        this.active();
+                        t.succeeded && t.succeeded();
+                    });
+                // new action
+                } else {
+                    
+                    
+                    
+                }
+                */
+            }
+        }
+
+
+        /*
+        // make sure alias is provided
+        if (uri.length && ((workspace.aliases[uri[0]] || []).length) || uri[0] == "..") {
+            // get exactly id
+            var id = ".." == alias ? module.exports.caller.arguments[0].__id : workspace.aliases[alias][workspace.aliases[alias].length - 1];
+            
+            // get info
+            if (/^get$/i.test(g.method)) {
+                // create data container
+                var data = {};
+                // get props
+                for (var key in ((workspace.tree[id].instance || {}).__props || {})) data[key] = workspace.tree[id].instance.__props[key];
+                // node
+                if (/^node$/i.test(type)) {
+                    // callback with props
+                    t.succeeded && t.succeeded(data);
+                // view
+                } else {
+                    // append state info
+
+                    // get info
+                    __rN.UIManager.measure(__rN.findNodeHandle(closestView), function(x, y, width, height, pageX, pageY) {
+                        // append view info to data container
+                        data.view = {
+                            x       : x,
+                            y       : y,
+                            width   : width,
+                            height  : height
+                        };
+                        // callback with info
+                        t.succeeded && t.succeeded(data);
+                    });
+                }
+            // reload or start new action
+            } else if (/^post|put$/i.test(g.method)) {
+                
             // delete node
             } else if (/^delete$/i.test(g.method)) {
 

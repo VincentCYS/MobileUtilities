@@ -305,7 +305,6 @@ module.exports  = function(g, t) {
             }
             parent = parent.__caller;
         }
-        console.log("[network] heads:", heads);
         // get alias
         var alias = uri.shift();
         // upper level
@@ -317,23 +316,22 @@ module.exports  = function(g, t) {
         var headId = alias && heads.length ? heads.pop() : null;
         // get targeted id
         var targetedId = headId ? workspace.tree[headId].aliases[alias] : null;
-        console.log("[network] targeted id:", targetedId);
         // valid url
         if (targetedId) {
-            console.log("[network] targeted id:", targetedId);
+            // get component type
+            var type = workspace.views[targetedId] ? "view" : "node";
+            // get closest view
+            var closestView = workspace.tree[targetedId].dom();
+            console.log("[network] targeted id:", type, typeof closestView);
         }
 
 
         /*
         // make sure alias is provided
         if (uri.length && ((workspace.aliases[uri[0]] || []).length) || uri[0] == "..") {
-            
             // get exactly id
             var id = ".." == alias ? module.exports.caller.arguments[0].__id : workspace.aliases[alias][workspace.aliases[alias].length - 1];
-            // get closest view
-            var closestView = workspace.tree[id].dom();
-            // get component type
-            var type = workspace.views[id] ? "view" : "node";
+            
             // get info
             if (/^get$/i.test(g.method)) {
                 // create data container

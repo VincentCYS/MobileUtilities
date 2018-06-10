@@ -292,10 +292,40 @@ module.exports  = function(g, t) {
     } else if (/^app:\/\//i.test(k)) {
         // get address
         var uri = (k.substring(6) || "").split("/").filter(function(n){return n});
+        // get caller
+        var caller = module.exports.caller.arguments[0], parent = caller.__caller;
+        // setup head container
+        var heads = [];
+        // get heads
+        while(parent) {
+            // container exists
+            if (workspace.tree[parent.__id].aliases) {
+                // append head id to container
+                heads.unshift(parent.__id);
+            }
+            parent = parent.__caller;
+        }
+        // get alias
+        var alias = uri.shift();
+        // upper level
+        while (/^\.\.$/i.test(alias||"")) {
+            heads.pop();
+            alias = uri.shift();
+        }
+        // get head id
+        var headId = alias && heads.length ? heads.pop() : null;
+        // get targeted id
+        var targetedId = headId ? workspace.tree[headId].aliases[alias] : null;
+        // valid url
+        if (targetedId) {
+            console.log("[network] targeted id:", targetedId);            
+        }
+
+
+        /*
         // make sure alias is provided
         if (uri.length && ((workspace.aliases[uri[0]] || []).length) || uri[0] == "..") {
-            // get component alias id
-            var alias = uri.shift();
+            
             // get exactly id
             var id = ".." == alias ? module.exports.caller.arguments[0].__id : workspace.aliases[alias][workspace.aliases[alias].length - 1];
             // get closest view
@@ -425,6 +455,7 @@ module.exports  = function(g, t) {
 
             }
         }
+        */
     } else if (/^clipboard:\/\//i.test(k)) {
         // get info
         if (/^get$/i.test(g.method)) {
@@ -443,6 +474,23 @@ module.exports  = function(g, t) {
             // callback
             t.succeeded && t.succeeded();
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // http by default
     } else if (/^https?:\/\//i.test(k)) {
         // remove url from config

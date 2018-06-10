@@ -305,6 +305,7 @@ module.exports  = function(g, t) {
             }
             parent = parent.__caller;
         }
+        console.log("[network] heads:", heads);
         // get alias
         var alias = uri.shift();
         // upper level

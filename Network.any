@@ -335,7 +335,7 @@ module.exports  = function(g, t) {
                     var instance = workspace.tree[targetedId].instance;
                     // update caller
                     caller = instance.__caller;
-                    console.log("[network] test:", props, Object.keys(closestView._reactInternalFiber));
+                    console.log("[network] test:", props, Object.keys(closestView._reactInternalFiber.type));
                     // update style?
                     if (closestView && (/^style$/i.test(uri[0]||"") || (!isNaN(parseInt(uri[0])) && /^style$/i.test(uri[1]||""))) && /^view$/i.test(type)) {
                         var style = props, validStyle = closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.validAttributes.style, convertors = {

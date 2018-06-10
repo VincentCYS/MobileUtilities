@@ -341,7 +341,10 @@ module.exports  = function(g, t) {
                         // clear prop data container for storing style only
                         props = {};
                         props.style = /^put$/i.test(g.method) ? JSON.parse(JSON.stringify(closestView.state.style || {})) : {};
-                        for (var key in style) props.style[key] = style[key];
+                        for (var key in style) {
+                            var value = parseFloat(style[key]);
+                            props.style[key] = isNaN(value) ? style[key] : value;
+                        }
                         
                         /*{
                             

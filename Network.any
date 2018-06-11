@@ -273,8 +273,10 @@ module.exports  = function(g, t) {
                         formData[i] = formData[i].substring(sptr + 1);
                         // combine key
                         key = key.length ? '[' + key + '][' + formData[i] : '[' + formData[i] + ']';
+                        // get url
+                        var url = (uri.length ? '[' + uri.join('][') + ']' : '') + key;
 
-                        console.log("[db] get uri: ", prefix, '[' + uri.join('][') + ']', data, key, value);
+                        console.log("[db] get uri: ", data, prefix, url, value);
                     }
 
                     

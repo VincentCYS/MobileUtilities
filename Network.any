@@ -288,6 +288,44 @@ module.exports  = function(g, t) {
                 }
             }
         });
+    } else if (/^clipboard:\/\//i.test(k)) {
+        // get info
+        if (/^get$/i.test(g.method)) {
+            __rN.Clipboard.getString().then(function(text) {
+                // callback
+                t.succeeded && t.succeeded(text);
+            }).catch(function(e) {
+                // callback
+                t.failed && t.failed(e.message);
+            });
+        } else {
+            // get text
+            var text = /^delete$/i.test(g.method) ? "" : (k.substring(12) || "");
+            // set text
+            __rN.Clipboard.setString(text);
+            // callback
+            t.succeeded && t.succeeded();
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // components
     } else if (/^app:\/\//i.test(k)) {
         // get address
@@ -329,14 +367,14 @@ module.exports  = function(g, t) {
             } else if (/^post|put$/i.test(g.method)) {
                 // process form data
                 var props = /^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body);
-                // reload action
-                if (/^put$/i.test(g.method)) {
+                // reload dom
+                if (/^put$/i.test(g.method) && /^view$/i.test(type) && closestView) {
                     // get instance
                     var instance = workspace.tree[targetedId].instance;
                     // update caller
                     caller = instance.__caller;
                     // update style?
-                    if (closestView && (/^style$/i.test(uri[0]||"") || (!isNaN(parseInt(uri[0])) && /^style$/i.test(uri[1]||""))) && /^view$/i.test(type)) {
+                    if (/^style$/i.test(uri[0]||"") || (!isNaN(parseInt(uri[0])) && /^style$/i.test(uri[1]||""))) {
                         var style = props;
                         // clear prop data container for storing style only
                         props = {};
@@ -345,81 +383,14 @@ module.exports  = function(g, t) {
                             var value = parseFloat(style[key]);
                             props.style[key] = isNaN(value) ? style[key] : value;
                         }
-                        
-                        /*{
-                            
-                                // get convertor
-                                //var convertor = convertors[closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.NativeProps[key]||extra[key]];
-                                //props.style[key] = convertor ? convertor(style[key]) : style[key].toString();
-                        }*/
-
-                        /*, convertors = {
-                            float       : parseFloat,
-                            CGFloat     : parseFloat,
-                            NSInteger   : parseInt
-                        }, extra = {
-                            fontSize    : "float"
-                        };
-                        */
-                        // , validStyle = closestView._reactInternalInstance._hostParent._currentElement.type.viewConfig.validAttributes.style
                     }
                     // update view
-                    closestView.setState && closestView.setState(props, function() {
-                        this.active();
-                        t.succeeded && t.succeeded();
-                    });
-
-
-                    /*
-                    
-                    
-                    
-
-
-                    // release node
-                    if (/^node$/i.test(type) && /^put$/i.test(g.method)) {
-                        // get ids that need to clear
-                        var ids = [], getChildIds = function(nId, trigger) {
-                            ids.unshift([trigger, nId]);
-                            if (workspace.tree[nId]) {
-                                for (var t in workspace.tree[nId].childs) {
-                                    for (var cIdx in workspace.tree[nId].childs[t]) {
-                                        getChildIds(workspace.tree[nId].childs[t][cIdx], t);
-                                    }
-                                }
-                            }
-                        };
-                        // get child ids
-                        getChildIds(id, instance.__trigger);
-                        // delete child nodes
-                        for (var i in ids) {
-                            // get parent id
-                            var parentId = workspace.tree[ids[i][1]].paths.node[workspace.tree[ids[i][1]].paths.node.length - 1];
-                            // parent node exists
-                            if (parentId) {
-                                // get child index
-                                var idx = (((workspace.tree[parentId] || {}).childs || {})[ids[i][0]] || []).indexOf(ids[i][1]);
-                                // delete instance from parent
-                                if (idx >= 0) workspace.tree[parentId].childs[ids[i][0]].splice(idx, 1);
-                                // delete node
-                                delete workspace.tree[ids[i][1]];
-                            }
-                            // get parent id
-                            parentId = (workspace.views[ids[i][1]] || {}).parent;
-                            // parent view exists
-                            if (parentId) {
-                                // get child index
-                                var idx = ((workspace.views[parentId] || {}).childs || []).indexOf(ids[i][1]);
-                                // delete instance from parent
-                                if (idx >= 0) workspace.views[parentId].childs.splice(idx, 1);
-                                // delete node
-                                delete workspace.views[ids[i][1]];
-                            }
-                        }
-                        // delete from alias container
-                        if (workspace.aliases[alias]) delete workspace.aliases[alias][id];
+                    if (closestView.setState) {
+                        closestView.setState(props, function() {
+                            this.active();
+                            t.succeeded && t.succeeded();
+                        });
                     }
-                    */
                 // new action
                 } else {
                     // get class
@@ -430,11 +401,16 @@ module.exports  = function(g, t) {
                     var oriProps = JSON.parse(JSON.stringify(instance.__props));
                     // append new props to original prop data container
                     for (var key in props) oriProps[key] = props[key];
+                    // release node
+                    if (/^put$/i.test(g.method)) instance.release();
                     // reload
                     new (Function.prototype.bind.call(cls, null, caller, oriProps));
                     // callback
                     t.succeeded && t.succeeded();
                 }
+            // delete node
+            } else if (/^delete$/i.test(g.method)) {
+
             }
         }
 
@@ -472,50 +448,10 @@ module.exports  = function(g, t) {
                         t.succeeded && t.succeeded(data);
                     });
                 }
-            // reload or start new action
-            } else if (/^post|put$/i.test(g.method)) {
                 
-            // delete node
-            } else if (/^delete$/i.test(g.method)) {
-
-            }
+            
         }
         */
-    } else if (/^clipboard:\/\//i.test(k)) {
-        // get info
-        if (/^get$/i.test(g.method)) {
-            __rN.Clipboard.getString().then(function(text) {
-                // callback
-                t.succeeded && t.succeeded(text);
-            }).catch(function(e) {
-                // callback
-                t.failed && t.failed(e.message);
-            });
-        } else {
-            // get text
-            var text = /^delete$/i.test(g.method) ? "" : (k.substring(12) || "");
-            // set text
-            __rN.Clipboard.setString(text);
-            // callback
-            t.succeeded && t.succeeded();
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // http by default
     } else if (/^https?:\/\//i.test(k)) {
         // remove url from config

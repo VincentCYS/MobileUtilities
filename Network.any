@@ -268,7 +268,7 @@ module.exports  = function(g, t) {
                         // get key
                         var key = formData[i].substr(0, sptr);
 
-                        console.log("[db] get uri: ", prefix, uri, data, key, formData[i].substring(key.length + 1), value);
+                        console.log("[db] get uri: ", prefix, uri, data, key, value);
                     }
 
                     

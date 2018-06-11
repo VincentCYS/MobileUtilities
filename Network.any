@@ -293,62 +293,6 @@ module.exports  = function(g, t) {
                         // get all : get specified
                         t.succeeded && t.succeeded(formData);
                     });
-                    /*
-                    // setup container
-                    var rows = [], idx = -1;
-                    
-                    // extract prefix
-                    var prefix = uri.shift();
-                    // update array data
-                    if (/^put$/i.test(g.method) && !isNaN(parseInt(uri[uri.length - 1]))) {
-                        // get index
-                        idx = uri.pop();
-                        // get rows
-                        rows = evaluate("${" + [prefix].concat(uri).join(".") + "}", data);
-                        // add the index back
-                        uri.push(idx);
-                    }
-                    // adjust prefix
-                    prefix += (uri.length ? "[" + uri.join("][") + "]" : "");
-                    // clear uri
-                    uri = [];
-                    // insert data
-                    if (/^post$/i.test(g.method)) {
-                        // convert prefix formart from query string to json as pointing key
-                        var key = prefix.replace(/(\]\[|\[)/g, '.').replace(/\]$/, '');
-                        // get reference
-                        rows = evaluate("${" + key + "}", data);
-                        // not an array?
-                        if (!Array.isArray(rows)) rows = [];
-                        // append index for creating new row
-                        uri.push(rows.length);
-                    }
-                    // add prefix for form data
-                    for (var i in formData) {
-                        var field = formData[i].split("="), sprt = field[0].indexOf("[");
-                        field[0] = sprt >= 0 ? "[" + field[0].substr(0, sprt) + "]" + field[0].substring(sprt) : "[" + field[0] + "]";
-                        field[0] = prefix + (uri.length ? "[" + uri.join("][") + "]" : "") + field[0];
-                        formData[i] = field.join("=");
-                    }
-                    // move back to upper layer
-                    if (/^put$/i.test(g.method)) prefix = prefix.replace(/\[[0-9]+\]$/, '');
-                    // append rows to form data
-                    for (var i in rows) {
-                        if (i != idx) {
-                            var row = {};
-                            row[prefix] = {};
-                            row[prefix][i] = rows[i];
-                            formData.push(qs.stringify(row).replace(/%5B/g, '[').replace(/%5D/g, ']'));
-                        }
-                    }
-                    // convert to json format
-                    formData = qs.parse(formData.join("&"));
-                    // save data
-                    __rN.AsyncStorage.mergeItem(appId, JSON.stringify(formData), function() {
-                        // get all : get specified
-                        t.succeeded && t.succeeded(formData);
-                    });
-                    */
                 // read
                 } else {
                     // get exactly data

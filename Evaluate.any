@@ -227,5 +227,5 @@ module.exports  = function(str, data) {
     }
     // change result to object
     try { result = result || (/^(\{.*\}|\[.*\])$/i.test(str) ? JSON.parse(str) : str) } catch(e) { result = str }
-    return typeof result == "string" ? result.trim() : result;
+    return result;
 };

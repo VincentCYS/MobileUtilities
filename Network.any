@@ -256,9 +256,8 @@ module.exports  = function(g, t) {
                         }
                     }// get prefix
                     var prefix = uri.shift();
-                    console.log("[db] get uri body: ", g.body);
                     // process form data
-                    var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body)).split("&").filter(function(n){return n});
+                    var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? g.body : JSON.parse(g.body)).split("&").filter(function(n){return n});
                     for (var i in formData) {
                         // get separator
                         var sptr = formData[i].indexOf('[');

@@ -354,6 +354,14 @@ module.exports  = function(g, t) {
         var headId = alias && heads.length ? heads.pop() : null;
         // get targeted id
         var targetedId = headId ? workspace.tree[headId].aliases[alias] : null;
+        // lower level
+        while (targetedId && (uri[0]||"") != "style") {
+            // alias exists
+            if (workspace.tree[targetedId].aliases[uri[0]]) {
+                alias = uri.shift();
+                targetedId = workspace.tree[targetedId].aliases[alias];
+            }
+        }
         // valid url
         if (targetedId) {
             // get component type
@@ -362,6 +370,36 @@ module.exports  = function(g, t) {
             var closestView = workspace.tree[targetedId].dom();
             // get info
             if (/^get$/i.test(g.method)) {
+
+
+                /*
+                // create data container
+                var data = {};
+                // get props
+                for (var key in ((workspace.tree[id].instance || {}).__props || {})) data[key] = workspace.tree[id].instance.__props[key];
+                // node
+                if (/^node$/i.test(type)) {
+                    // callback with props
+                    t.succeeded && t.succeeded(data);
+                // view
+                } else {
+                    // append state info
+
+                    // get info
+                    __rN.UIManager.measure(__rN.findNodeHandle(closestView), function(x, y, width, height, pageX, pageY) {
+                        // append view info to data container
+                        data.view = {
+                            x       : x,
+                            y       : y,
+                            width   : width,
+                            height  : height
+                        };
+                        // callback with info
+                        t.succeeded && t.succeeded(data);
+                    });
+                }
+                */
+
 
             // reload or start new action
             } else if (/^post|put$/i.test(g.method)) {
@@ -413,45 +451,6 @@ module.exports  = function(g, t) {
 
             }
         }
-
-
-        /*
-        // make sure alias is provided
-        if (uri.length && ((workspace.aliases[uri[0]] || []).length) || uri[0] == "..") {
-            // get exactly id
-            var id = ".." == alias ? module.exports.caller.arguments[0].__id : workspace.aliases[alias][workspace.aliases[alias].length - 1];
-            
-            // get info
-            if (/^get$/i.test(g.method)) {
-                // create data container
-                var data = {};
-                // get props
-                for (var key in ((workspace.tree[id].instance || {}).__props || {})) data[key] = workspace.tree[id].instance.__props[key];
-                // node
-                if (/^node$/i.test(type)) {
-                    // callback with props
-                    t.succeeded && t.succeeded(data);
-                // view
-                } else {
-                    // append state info
-
-                    // get info
-                    __rN.UIManager.measure(__rN.findNodeHandle(closestView), function(x, y, width, height, pageX, pageY) {
-                        // append view info to data container
-                        data.view = {
-                            x       : x,
-                            y       : y,
-                            width   : width,
-                            height  : height
-                        };
-                        // callback with info
-                        t.succeeded && t.succeeded(data);
-                    });
-                }
-                
-            
-        }
-        */
     // http by default
     } else if (/^https?:\/\//i.test(k)) {
         // remove url from config

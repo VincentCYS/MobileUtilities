@@ -278,8 +278,12 @@ module.exports  = function(g, t) {
                         formData[i] = formData[i].substring(sptr + 1);
                         // combine key
                         key = key.length ? '[' + key + '][' + formData[i] : '[' + formData[i] + ']';
+
+
+
                         // append it for creating record
-                        if (/^post$/i.test(g.method)) key = '[' + idx + ']' + key;
+                        //if (/^post$/i.test(g.method)) key = '[' + idx + ']' + key;
+
                         // get url
                         var url = prefix + (uri.length ? '[' + uri.join('][') + ']' : '') + key;
                         // update form data value

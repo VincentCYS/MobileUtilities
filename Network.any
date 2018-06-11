@@ -279,9 +279,10 @@ module.exports  = function(g, t) {
                         if (/^post$/i.test(g.method)) key = '[' + idx + ']' + key;
                         // get url
                         var url = prefix + (uri.length ? '[' + uri.join('][') + ']' : '') + key;
-
-                        console.log("[db] get uri: ", data, url, value);
+                        // update form data value
+                        formData[i] = [url, value].filter(function(v){return v});
                     }
+                    console.log("[db] get uri: ", prefix, uri, data, formData);
 
                     
 

@@ -244,7 +244,9 @@ module.exports  = function(g, t) {
                 try { data = JSON.parse(result) } catch(e) { data = null } finally { data = data || {} }
                 // delete
                 if (/^delete$/i.test(g.method)) {
-
+                    // get url
+                    var url = uri.shift() + (uri.length ? '[' + uri.join('][') + ']' : '');
+                    console.log("[db] delete form data: ", url);
                 // insert or update
                 } else if (/^post|put$/i.test(g.method)) {
                     // get exactly data
@@ -254,7 +256,8 @@ module.exports  = function(g, t) {
                         if (!Array.isArray(data)) {
                             data = typeof data == "object" ? [data] : [];
                         }
-                    }// get prefix
+                    }
+                    // get prefix
                     var prefix = uri.shift();
                     // process form data
                     var formData = (/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? g.body : qs.stringify(JSON.parse(g.body))).split("&").filter(function(n){return n});

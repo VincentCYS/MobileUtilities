@@ -280,7 +280,7 @@ module.exports  = function(g, t) {
                         // get url
                         var url = prefix + (uri.length ? '[' + uri.join('][') + ']' : '') + key;
                         // update form data value
-                        formData[i] = [url, value].filter(function(v){return v});
+                        formData[i] = [url, value].filter(function(v){return v}).join('=');
                     }
                     console.log("[db] get uri: ", prefix, uri, data, formData);
 

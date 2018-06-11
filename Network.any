@@ -355,7 +355,7 @@ module.exports  = function(g, t) {
         // get targeted id
         var targetedId = headId ? workspace.tree[headId].aliases[alias] : null;
         // lower level
-        while (targetedId && (uri[0]||"") != "style" && workspace.tree[targetedId].aliases[uri[0]]) {
+        while (targetedId && (uri[0]||"") != "style" && workspace.tree[targetedId].aliases[uri[0]||""]) {
             alias = uri.shift();
             targetedId = workspace.tree[targetedId].aliases[alias];
         }

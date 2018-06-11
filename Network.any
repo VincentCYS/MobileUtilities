@@ -306,7 +306,6 @@ module.exports  = function(g, t) {
                         }
                         formData = [];
                         for (var field in data) formData.push(data[field]);
-                        console.log("[db] get form data: ", formData);
                         // convert to json format
                         formData = qs.parse(formData.join("&"));
                     }
@@ -319,6 +318,7 @@ module.exports  = function(g, t) {
                 } else {
                     // get exactly data
                     if (uri.length) data = evaluate("${" + uri.join(".") + "}", data);
+                    console.log("[db] get data: ", data);
                     // get all : get specified
                     t.succeeded && t.succeeded(data);
                 }

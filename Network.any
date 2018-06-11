@@ -279,12 +279,19 @@ module.exports  = function(g, t) {
                         // combine key
                         key = key.length ? '[' + key + '][' + formData[i] : '[' + formData[i] + ']';
                         // append it for creating record
-                        if (/^post$/i.test(g.method)) key = '[' + idx + ']' + key;
+                        if (/^post$/i.test(g.method)) {
+                            console.log("[db] testing here.......");
+                            key = '[' + idx + ']' + key;
+                        }
                         // get url
                         var url = prefix + (uri.length ? '[' + uri.join('][') + ']' : '') + key;
 
 
+
+
                         console.log("[db] row data: ", url, value);
+                        
+
 
 
                         

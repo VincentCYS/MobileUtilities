@@ -244,9 +244,10 @@ module.exports  = function(g, t) {
                 try { data = JSON.parse(result) } catch(e) { data = null } finally { data = data || {} }
                 // delete
                 if (/^delete$/i.test(g.method)) {
-                    // get url
-                    var url = uri.shift() + (uri.length ? '[' + uri.join('][') + ']' : '');
-                    console.log("[db] delete form data: ", url);
+                    // setup form data
+                    var formData = qs.parse(uri.shift() + (uri.length ? '[' + uri.join('][') + ']' : '') + '=');
+
+                    console.log("[db] delete form data: ", formData);
                 // insert or update
                 } else if (/^post|put$/i.test(g.method)) {
                     // get exactly data

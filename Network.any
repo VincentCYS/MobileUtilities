@@ -264,6 +264,22 @@ module.exports  = function(g, t) {
                         var prefix = uri.shift();
                         // get index
                         var idx = Array.isArray(data) ? data.length : 0;
+                        // append it for creating record
+                        if (/^post$/i.test(g.method)) {
+                            for (var i in formData) {
+                                // get separator
+                                var sptr = formData[i].indexOf('['), isStr = sptr < 0;
+                                // not array or object
+                                if (isStr) sptr = formData[i].indexOf('=');
+                                // get key
+                                var key = formData[i].substr(0, sptr);
+                                // get suffix
+                                formData[i] = formData[i].substring(sptr + 1);
+                                // update form data
+                                formData[i] = idx + '[' + key + ']' + (isStr ? '=' : '[') + formData[i];
+                            }
+                        }
+                        console.log("[db] get form data: ", key, formData);
                         // combine form data and data
                         formData = qs.stringify(data).split('&').filter(function(f){return f}).concat(formData);
                         // create data container
@@ -284,8 +300,6 @@ module.exports  = function(g, t) {
                             formData[i] = formData[i].substring(sptr + 1);
                             // combine key
                             key = key.length ? '[' + key + '][' + formData[i] : '[' + formData[i] + ']';
-                            // append it for creating record
-                            if (/^post$/i.test(g.method)) key = '[' + idx + ']' + key;
                             // get url
                             var url = prefix + (uri.length ? '[' + uri.join('][') + ']' : '') + key;
                             // update form data value
@@ -293,7 +307,6 @@ module.exports  = function(g, t) {
                         }
                         formData = [];
                         for (var field in data) formData.push(data[field]);
-                        console.log("[db] get form data: ", formData);
                         // convert to json format
                         formData = qs.parse(formData.join("&"));
                     }
@@ -309,68 +322,6 @@ module.exports  = function(g, t) {
                     // get all : get specified
                     t.succeeded && t.succeeded(data);
                 }
-
-
-
-
-
-
-
-
-
-
-
-
-                /*
-                // delete data
-                if (/^delete$/i.test(g.method)) {
-                    // setup form data
-                    var formData = [], uriLen = uri.length, rows = uriLen >= 2 ? evaluate("${" + uri.slice(0, uriLen - 1) + "}", data) : [];
-                    // remove item
-                    if (/^[0-9]+$/.test(uri[uriLen - 1] || "") && Array.isArray(rows)) {
-                        // get index
-                        var idx = uri.pop();
-                        // setup prefix
-                        var prefix = uri.shift() + (uriLen - 2 > 0 ? "[" + uri.join("][") + "]" : "");
-                        // delete row
-                        rows.splice(idx, 1);
-                    // clear value
-                    } else {
-                        // setup value to blank
-                        formData = [uri.shift() + (uriLen - 1 > 0 ? "[" + uri.join("][") + "]" : "") + "="];
-                    }
-                    // append remained rows
-                    for (var i in rows) {
-                        var row = {};
-                        row[prefix] = {};
-                        row[prefix][i] = rows[i];
-                        formData.push(qs.stringify(row).replace(/%5B/g, '[').replace(/%5D/g, ']'));
-                    }
-                    // save data
-                    __rN.AsyncStorage.mergeItem(appId, JSON.stringify(qs.parse(formData.join("&"))), function() {
-                        // get all : get specified
-                        t.succeeded && t.succeeded(formData);
-                    });
-                // save data
-                } else if (/^post|put$/i.test(g.method)) {
-                    
-                // get data
-                } else {
-                    
-                }
-                */
-
-
-
-
-
-
-
-
-
-
-
-
             }
         });
     // components

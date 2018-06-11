@@ -257,7 +257,7 @@ module.exports  = function(g, t) {
                     }// get prefix
                     var prefix = uri.shift();
                     // process form data
-                    var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? g.body : JSON.parse(g.body)).split("&").filter(function(n){return n});
+                    var formData = (/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? g.body : qs.stringify(JSON.parse(g.body))).split("&").filter(function(n){return n});
                     for (var i in formData) {
                         // get separator
                         var sptr = formData[i].indexOf('[');

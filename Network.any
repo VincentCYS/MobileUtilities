@@ -242,57 +242,58 @@ module.exports  = function(g, t) {
                 var data = null;
                 // parse result
                 try { data = JSON.parse(result) } catch(e) { data = null } finally { data = data || {} }
-                // delete
-                if (/^delete$/i.test(g.method)) {
-                    // setup form data
-                    var formData = qs.parse(uri.shift() + (uri.length ? '[' + uri.join('][') + ']' : '') + '=');
-
-                    console.log("[db] delete form data: ", formData);
-                // insert or update
-                } else if (/^post|put$/i.test(g.method)) {
-                    // get exactly data
-                    if (uri.length) data = evaluate("${" + uri.join(".") + "}", data);
-                    // make data to be an array
-                    if (/^post$/i.test(g.method)) {
-                        if (!Array.isArray(data)) {
-                            data = typeof data == "object" ? [data] : [];
-                        }
-                    }
-                    // get prefix
-                    var prefix = uri.shift();
+                // insert/update/delete
+                if (/^post|put|delete$/i.test(g.method)) {
                     // process form data
                     var formData = (/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? g.body : qs.stringify(JSON.parse(g.body))).split("&").filter(function(n){return n});
-                    // get index
-                    var idx = Array.isArray(data) ? data.length : 0;
-                    console.log("[db] get db data: ", data);
-                    // combine form data and data
-                    formData = qs.stringify(data).split('&').filter(function(f){return f}).concat(formData);
-                    // parse data
-                    for (var i in formData) {
-                        // get separator
-                        var sptr = formData[i].lastIndexOf('=');
-                        // get value
-                        var value = formData[i].substring(sptr + 1);
-                        // get key
-                        formData[i] = decodeURIComponent(formData[i].substr(0, sptr));
-                        // get separator again for getting prefix
-                        sptr = formData[i].indexOf('[');
+                    // delete data
+                    if (/^delete$/i.test(g.method)) {
+                        // setup form data
+                        formData = qs.parse(uri.shift() + (uri.length ? '[' + uri.join('][') + ']' : '') + '=');
+                    // insert or update
+                    } else {
+                        // get exactly data
+                        if (uri.length) data = evaluate("${" + uri.join(".") + "}", data);
+                        // make data to be an array
+                        if (/^post$/i.test(g.method)) {
+                            if (!Array.isArray(data)) {
+                                data = typeof data == "object" ? [data] : [];
+                            }
+                        }
                         // get prefix
-                        var key = formData[i].substr(0, sptr);
-                        // get real key
-                        formData[i] = formData[i].substring(sptr + 1);
-                        // combine key
-                        key = key.length ? '[' + key + '][' + formData[i] : '[' + formData[i] + ']';
-                        // append it for creating record
-                        if (/^post$/i.test(g.method)) key = '[' + idx + ']' + key;
-                        // get url
-                        var url = prefix + (uri.length ? '[' + uri.join('][') + ']' : '') + key;
-                        // update form data value
-                        formData[i] = [url, value].filter(function(v){return v}).join('=');
+                        var prefix = uri.shift();
+                        // get index
+                        var idx = Array.isArray(data) ? data.length : 0;
+                        console.log("[db] get db data: ", data);
+                        // combine form data and data
+                        formData = qs.stringify(data).split('&').filter(function(f){return f}).concat(formData);
+                        // parse data
+                        for (var i in formData) {
+                            // get separator
+                            var sptr = formData[i].lastIndexOf('=');
+                            // get value
+                            var value = formData[i].substring(sptr + 1);
+                            // get key
+                            formData[i] = decodeURIComponent(formData[i].substr(0, sptr));
+                            // get separator again for getting prefix
+                            sptr = formData[i].indexOf('[');
+                            // get prefix
+                            var key = formData[i].substr(0, sptr);
+                            // get real key
+                            formData[i] = formData[i].substring(sptr + 1);
+                            // combine key
+                            key = key.length ? '[' + key + '][' + formData[i] : '[' + formData[i] + ']';
+                            // append it for creating record
+                            if (/^post$/i.test(g.method)) key = '[' + idx + ']' + key;
+                            // get url
+                            var url = prefix + (uri.length ? '[' + uri.join('][') + ']' : '') + key;
+                            // update form data value
+                            formData[i] = [url, value].filter(function(v){return v}).join('=');
+                        }
+                        console.log("[db] get form data: ", formData);
+                        // convert to json format
+                        formData = qs.parse(formData.join("&"));
                     }
-                    console.log("[db] get form data: ", formData);
-                    // convert to json format
-                    formData = qs.parse(formData.join("&"));
                     // save data
                     __rN.AsyncStorage.mergeItem(appId, JSON.stringify(formData), function() {
                         // get all : get specified

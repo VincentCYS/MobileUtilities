@@ -276,13 +276,16 @@ module.exports  = function(g, t) {
                         var key = formData[i].substr(0, sptr);
                         // get real key
                         formData[i] = formData[i].substring(sptr + 1);
+
+
+
+                        console.log("[db] get key 1111111: ", key, formData[i]);
                         // combine key
                         key = key.length ? '[' + key + '][' + formData[i] : '[' + formData[i] + ']';
-
-
-
                         // append it for creating record
-                        //if (/^post$/i.test(g.method)) key = '[' + idx + ']' + key;
+                        if (/^post$/i.test(g.method)) key = '[' + idx + ']' + key;
+                        console.log("[db] get key 2222222: ", key);
+
 
                         // get url
                         var url = prefix + (uri.length ? '[' + uri.join('][') + ']' : '') + key;

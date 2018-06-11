@@ -286,9 +286,9 @@ module.exports  = function(g, t) {
                         // update form data value
                         formData[i] = [url, value].filter(function(v){return v}).join('=');
                     }
+                    console.log("[db] get form data: ", formData);
                     // convert to json format
                     formData = qs.parse(formData.join("&"));
-                    console.log("[db] get form data: ", formData);
                     // save data
                     __rN.AsyncStorage.mergeItem(appId, JSON.stringify(formData), function() {
                         // get all : get specified

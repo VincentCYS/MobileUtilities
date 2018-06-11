@@ -317,8 +317,8 @@ module.exports  = function(g, t) {
                 // read
                 } else {
                     // get exactly data
-                    if (uri.length) data = evaluate("${" + uri.join(".") + "}", data);
-                    console.log("[db] get data: ", data);
+                    if (uri.length) data = evaluate('${' + uri.join(".") + '}', data);
+                    console.log("[db] get data: ", '${' + uri.join(".") + '}', data);
                     // get all : get specified
                     t.succeeded && t.succeeded(data);
                 }

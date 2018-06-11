@@ -250,8 +250,11 @@ module.exports  = function(g, t) {
                     // get exactly data
                     if (uri.length) data = evaluate("${" + uri.join(".") + "}", data);
                     // make data to be an array
-                    if (/^post$/i.test(g.method) && !Array.isArray(data)) data = [data]; 
-                    
+                    if (/^post$/i.test(g.method)) {
+                        if (!Array.isArray(data)) {
+                            data = typeof data == "object" ? [data] : [];
+                        }
+                    }
                     console.log("[db] get uri: ", uri, data);
 
                     /*

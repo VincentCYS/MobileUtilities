@@ -354,7 +354,7 @@ module.exports  = function(g, t) {
         var headId = alias && heads.length ? heads.pop() : null;
         // get targeted id
         var targetedId = headId ? workspace.tree[headId].aliases[alias] : null;
-        console.log("[network] check: ", workspace.tree[targetedId].aliases, uri);
+        console.log("[network] check: ", targetedId, (workspace.tree[targetedId]||{}).aliases, uri);
         // lower level
         while (targetedId && (uri[0]||"") != "style" && workspace.tree[targetedId].aliases[uri[0]]) {
             alias = uri.shift();

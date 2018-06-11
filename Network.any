@@ -370,8 +370,12 @@ module.exports  = function(g, t) {
             var closestView = workspace.tree[targetedId].dom();
             // get info
             if (/^get$/i.test(g.method)) {
-
-
+                // get instance
+                var instance = workspace.tree[targetedId].instance;
+                // get data
+                var data = instance.data();
+                // callback with props
+                t.succeeded && t.succeeded(data);
                 /*
                 // create data container
                 var data = {};
@@ -422,8 +426,9 @@ module.exports  = function(g, t) {
                             props.style[key] = isNaN(value) ? style[key] : value;
                         }
                     }
-                    // update view
+                    // view exists
                     if (closestView.setState) {
+                        // update view
                         closestView.setState(props, function() {
                             this.active();
                             t.succeeded && t.succeeded();
@@ -439,8 +444,13 @@ module.exports  = function(g, t) {
                     var oriProps = JSON.parse(JSON.stringify(instance.__props));
                     // append new props to original prop data container
                     for (var key in props) oriProps[key] = props[key];
-                    // release node
-                    if (/^put$/i.test(g.method)) instance.release();
+                    // update node
+                    if (/^put$/i.test(g.method)) {
+                        // release the original node
+                        instance.release();
+                        // update caller
+                        caller = instance.__caller;
+                    }
                     // reload
                     new (Function.prototype.bind.call(cls, null, caller, oriProps));
                     // callback

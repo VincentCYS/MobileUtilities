@@ -260,6 +260,7 @@ module.exports  = function(g, t) {
                     var formData = (/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? g.body : qs.stringify(JSON.parse(g.body))).split("&").filter(function(n){return n});
                     // get index
                     var idx = Array.isArray(data) ? data.length : 0;
+                    console.log("[db] get db data: ", data);
                     // combine form data and data
                     formData = qs.stringify(data).split('&').filter(function(f){return f}).concat(formData);
                     // parse data
@@ -276,14 +277,8 @@ module.exports  = function(g, t) {
                         var key = formData[i].substr(0, sptr);
                         // get real key
                         formData[i] = formData[i].substring(sptr + 1);
-                        console.log("[db] row data: ", key, ', ', formData[i]);
                         // combine key
                         key = key.length ? '[' + key + '][' + formData[i] : '[' + formData[i] + ']';
-                        console.log("[db] row data: ", key);
-
-
-
-
                         // append it for creating record
                         if (/^post$/i.test(g.method)) key = '[' + idx + ']' + key;
                         // get url
@@ -291,7 +286,6 @@ module.exports  = function(g, t) {
                         // update form data value
                         formData[i] = [url, value].filter(function(v){return v}).join('=');
                     }
-                    //console.log("[db] get form data 22: ", formData);
                     // convert to json format
                     formData = qs.parse(formData.join("&"));
                     // save data

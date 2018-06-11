@@ -279,9 +279,9 @@ module.exports  = function(g, t) {
                                 formData[i] = idx + '[' + key + ']' + (isStr ? '=' : '[') + formData[i];
                             }
                         }
-                        console.log("[db] get form data: ", key, formData);
                         // combine form data and data
                         formData = qs.stringify(data).split('&').filter(function(f){return f}).concat(formData);
+                        console.log("[db] get form data: ", formData);
                         // create data container
                         data = {};
                         // parse data

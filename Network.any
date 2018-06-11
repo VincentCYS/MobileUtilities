@@ -255,13 +255,14 @@ module.exports  = function(g, t) {
                             data = typeof data == "object" ? [data] : [];
                         }
                     }
-                    console.log("[db] get uri: ", uri, data);
+                    // process form data
+                    var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body)).split("&").filter(function(n){return n});
+                    console.log("[db] get uri: ", uri, data, formData);
 
                     /*
                     // setup container
                     var rows = [], idx = -1;
-                    // process form data
-                    var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body)).split("&").filter(function(n){return n});
+                    
                     // extract prefix
                     var prefix = uri.shift();
                     // update array data

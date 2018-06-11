@@ -264,13 +264,15 @@ module.exports  = function(g, t) {
                         // get value
                         var value = formData[i].substring(sptr + 1);
                         // get key
+                        formData[i] = formData[i].substr(0, sptr);
+                        // get separator again for getting prefix
+                        sptr = formData[i].indexOf('[');
+                        // get prefix
                         var key = formData[i].substr(0, sptr);
+                        // get real key
+                        formData[i] = formData[i].substring(sptr + 1);
 
-
-                        // no separator
-                        //if (sptr < 0) sptr = formData[i].indexOf('=');
-
-                        console.log("[db] get uri: ", prefix, uri, data, key, value);
+                        console.log("[db] get uri: ", prefix, uri, data, key, formData[i], value);
                     }
 
                     

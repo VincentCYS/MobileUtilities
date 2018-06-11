@@ -260,6 +260,7 @@ module.exports  = function(g, t) {
                     var formData = (/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? g.body : qs.stringify(JSON.parse(g.body))).split("&").filter(function(n){return n});
                     // get index
                     var idx = Array.isArray(data) ? data.length : 0;
+                    console.log("[db] combined data: ", qs.stringify(data).split('&').concat(formData));
                     for (var i in formData) {
                         // get separator
                         var sptr = formData[i].lastIndexOf('=');

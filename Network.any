@@ -258,15 +258,17 @@ module.exports  = function(g, t) {
                     var prefix = uri.shift();
                     // process form data
                     var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body)).split("&").filter(function(n){return n});
-                    for (var key in formData) {
+                    for (var i in formData) {
                         // get separator
-                        var sptr = formData[key].indexOf('[');
+                        var sptr = formData[i].indexOf('[');
                         // no separator
-                        if (sptr < 0) sptr = formData[key].indexOf('=');
+                        if (sptr < 0) sptr = formData[i].indexOf('=');
                         // get value
-                        var value = formData[key].substring(sptr);
+                        var value = formData[i].substring(sptr + 1);
+                        // get key
+                        var key = formData[i].substr(0, sptr);
 
-                        console.log("[db] get uri: ", prefix, uri, data, formData[key], value);
+                        console.log("[db] get uri: ", prefix, uri, data, formData[i], value);
                     }
 
                     

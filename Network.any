@@ -258,6 +258,8 @@ module.exports  = function(g, t) {
                     var prefix = uri.shift();
                     // process form data
                     var formData = (/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? g.body : qs.stringify(JSON.parse(g.body))).split("&").filter(function(n){return n});
+                    // get index
+                    var idx = Array.isArray(data) ? data.length : 0;
                     for (var i in formData) {
                         // get separator
                         var sptr = formData[i].lastIndexOf('=');
@@ -273,6 +275,8 @@ module.exports  = function(g, t) {
                         formData[i] = formData[i].substring(sptr + 1);
                         // combine key
                         key = key.length ? '[' + key + '][' + formData[i] : '[' + formData[i] + ']';
+                        // append it for creating record
+                        if (/^post$/i.test(g.method)) key = '[' + idx + ']';
                         // get url
                         var url = (uri.length ? '[' + uri.join('][') + ']' : '') + key;
 

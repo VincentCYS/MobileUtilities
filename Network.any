@@ -274,7 +274,7 @@ module.exports  = function(g, t) {
                         // combine key
                         key = key.length ? '[' + key + '][' + formData[i] : '[' + formData[i] + ']';
 
-                        console.log("[db] get uri: ", prefix, uri, data, key, value);
+                        console.log("[db] get uri: ", prefix, '[' + uri.join('][') + ']', data, key, value);
                     }
 
                     

@@ -254,10 +254,22 @@ module.exports  = function(g, t) {
                         if (!Array.isArray(data)) {
                             data = typeof data == "object" ? [data] : [];
                         }
-                    }
+                    }// get prefix
+                    var prefix = uri.shift();
                     // process form data
                     var formData = qs.stringify(/^application\/x-www-form-urlencoded$/i.test(g.headers['Content-Type']) ? qs.parse(g.body) : JSON.parse(g.body)).split("&").filter(function(n){return n});
-                    console.log("[db] get uri: ", uri, data, formData);
+                    for (var key in formData) {
+                        // get separator
+                        var sptr = formData[key].indexOf('[');
+                        // no separator
+                        if (sptr < 0) sptr = formData[key].indexOf('=');
+                        // get value
+                        var value = formData[key].substring(sptr);
+
+                        console.log("[db] get uri: ", prefix, uri, data, formData[key], value);
+                    }
+
+                    
 
                     /*
                     // setup container

@@ -262,6 +262,7 @@ module.exports  = function(g, t) {
                     var idx = Array.isArray(data) ? data.length : 0;
                     // combine form data and data
                     formData = qs.stringify(data).split('&').filter(function(f){return f}).concat(formData);
+                    console.log("[db] get form data: ", formData);
                     // parse data
                     for (var i in formData) {
                         // get separator
@@ -285,7 +286,7 @@ module.exports  = function(g, t) {
                         // update form data value
                         formData[i] = [url, value].filter(function(v){return v}).join('=');
                     }
-                    console.log("[db] get form data: ", formData);
+                    console.log("[db] get form data 22: ", formData);
                     // convert to json format
                     formData = qs.parse(formData.join("&"));
                     // save data

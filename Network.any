@@ -262,6 +262,7 @@ module.exports  = function(g, t) {
                     var idx = Array.isArray(data) ? data.length : 0;
                     // combine form data and data
                     formData = qs.stringify(data).split('&').filter(function(f){return f}).concat(formData);
+                        console.log("[db] row form data: ", formData);
                     // parse data
                     for (var i in formData) {
                         // get separator
@@ -270,7 +271,6 @@ module.exports  = function(g, t) {
                         var value = formData[i].substring(sptr + 1);
                         // get key
                         formData[i] = decodeURIComponent(formData[i].substr(0, sptr));
-                        console.log("[db] get key 1111111: ", formData[i]);
                         // get separator again for getting prefix
                         sptr = formData[i].indexOf('[');
                         // get prefix

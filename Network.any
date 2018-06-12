@@ -330,7 +330,7 @@ module.exports  = function(g, t) {
     } else if (/^app:\/\//i.test(k)) {
         // get address
         var uri = (k.substring(6) || "").split("/").filter(function(n){return n});
-        console.log("[network] check caller:", arguments);
+        console.log("[network] check caller:", arguments.callee);
         // get caller
         var caller = module.exports.caller.arguments[0], parent = caller.__caller;
         // setup head container

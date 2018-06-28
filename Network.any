@@ -7,6 +7,8 @@ var evaluate    = require("Evaluate");
 /* d:config, t:callbacks */
 module.exports  = function(g, t) {
     var k = g.url || "";
+    var object = g.object;
+    delete g.object;
     // invalid format
     if (!k.length || !/^[a-z0-9_-]+:(\/\/)?/i.test(k)) {
         // return error
@@ -332,7 +334,7 @@ module.exports  = function(g, t) {
         var uri = (k.substring(6) || "").split("/").filter(function(n){return n});
         console.log("[network] check caller:", module.exports.caller);
         // get caller
-        var caller = module.exports.caller.arguments[0], parent = caller.__caller;
+        var caller = object, parent = caller.__caller;
         // setup head container
         var heads = [];
         // get heads

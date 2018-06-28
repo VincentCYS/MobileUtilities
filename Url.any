@@ -1,0 +1,5 @@
+var CloudURL   = require("CloudURL");
+/* a:instance, b:callbacks */
+module.exports  = function(a, b) {
+    CloudURL(a, b);
+};

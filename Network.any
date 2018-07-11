@@ -72,13 +72,15 @@ module.exports  = function(g, t) {
                 // the rest
                 } else {
                     console.log('[BLE] ', deviceId, args);
+                    
+                    __rN.AlertIOS.alert(deviceId, JSON.stringify(args));
 
                     // connect the device
                     BLE.connect(deviceId)
                     // succeeded
                     .then(function() {
 
-                        __rN.AlertIOS.alert(deviceId, JSON.stringify(args));
+                        
 
 
 

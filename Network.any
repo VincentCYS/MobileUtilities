@@ -139,7 +139,7 @@ module.exports  = function(g, t) {
             }
         };
         // not ready yet?
-        while (!global.ble && !err) {
+        while (typeof global.ble == "undefined" && !err) {
             // setup bluetooth
             BLE.start({ showAlert: !1 })
             // succeeded

@@ -43,11 +43,15 @@ module.exports  = function(g, t) {
                 });
             } else {
                 // get device id
-                var deviceId = uri.shift();
+                var deviceId = uri.shift() || '';
                 // get args
                 while (uri.length > 0) args[uri.shift()] = uri.shift();
+                // no device
+                if (!deviceId.length) {
+                    // return error
+                    t.failed && t.failed('No device specified.');
                 // disconnect
-                if (/^delete$/i.test(g.method)) {
+                } else if (/^delete$/i.test(g.method)) {
                     // disconnect targeted device
                     BLE.disconnect(deviceId).then(function() {
 
@@ -140,6 +144,7 @@ module.exports  = function(g, t) {
         };
         // setup bluetooth
         if (global.ble || err) {
+            // already ready
             bleReady();
         } else {
             BLE.start({ showAlert: false })

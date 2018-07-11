@@ -138,10 +138,11 @@ module.exports  = function(g, t) {
                 }
             }
         };
-        // not ready yet?
-        while (typeof global.ble == "undefined" && !err) {
-            // setup bluetooth
-            BLE.start({ showAlert: !1, restoreIdentifierKey: 'test' })
+        // setup bluetooth
+        if (global.ble || err) {
+            bleReady();
+        } else {
+            BLE.start({ showAlert: false })
             // succeeded
             .then(function() {
                 // setup container

@@ -138,83 +138,80 @@ module.exports  = function(g, t) {
                 }
             }
         };
-        // not ready yet?
-        while (typeof global.ble == "undefined" && !err) {
-            // setup bluetooth
-            BLE.start({ showAlert: !1 })
-            // succeeded
-            .then(function() {
-                // setup container
-                global.ble = {};
-                // setup listeners
-                // scanning
-                agent.addListener('BleManagerDiscoverPeripheral', function(device) {
-                    // setup device
-                    device = device || {};
-                    // valid device
-                    if ("undefined" != typeof device.name) scannedDevices[device.id] = device;
-                });
-                // device disconnection handler
-                agent.addListener('BleManagerDisconnectPeripheral', function(a) {
-                    console.log("device: ", a, "disconnected");
-                    // callback
-                    t.succeeded && t.succeeded(a);
-                });
-                // add stop handler
-                agent.addListener('BleManagerStopScan', function() {
-                    // setup device container
-                    var devices = [];
-                    // append discovered device
-                    for (var d in scannedDevices) devices.push(scannedDevices[d]);
-                    // callback
-                    t.succeeded && t.succeeded(devices);
-                });
-                // received data handler
-                agent.addListener('BleManagerDidUpdateValueForCharacteristic', function(response) {
-
-
-
-                    /*
-                    var receivingBuf = "", receivingTimer = null;
-
-                    clearTimeout(receivingTimer);
-                    receivingTimer = setTimeout(function() {
-                        receivingTimer = clearTimeout(receivingTimer);
-                        // setup data container
-                        var data = null;
-                        // parse received data
-                        try { data = JSON.parse(receivingBuf) } catch(e) { data = receivingBuf }
-                        // get handler name
-                        var handlerName = [response.peripheral, response.service, response.characteristic].join('.');
-                        // callback
-                        for (var idx in (global.ble.read[handlerName] || [])) global.ble.read[handlerName][idx](data);
-                        // clear buffer
-                        receivingBuf = "";
-                    }, 750);
-                    // get value
-                    var value = (response || {}).value || [];
-                    // parse value
-                    while (value.length > 0) {
-                        var hex = value.splice(0, 2);
-                        receivingBuf += String.fromCharCode(parseInt(String.fromCharCode(hex[0]) + String.fromCharCode(hex[1]), 16));
-                    }
-                    */
-
-
-
-                });
-                console.log('[BLE] ready.');
-                // finished
-                bleReady();
-            })
-            // failed
-            .catch(function(e) {
-                // save error
-                err = e;
-                // return error
-                t.failed && t.failed((e || {}).message);
+        // setup bluetooth
+        global.ble ? BLE.start({ showAlert: !1 })
+        // succeeded
+        .then(function() {
+            // setup container
+            global.ble = {};
+            // setup listeners
+            // scanning
+            agent.addListener('BleManagerDiscoverPeripheral', function(device) {
+                // setup device
+                device = device || {};
+                // valid device
+                if ("undefined" != typeof device.name) scannedDevices[device.id] = device;
             });
-        }
+            // device disconnection handler
+            agent.addListener('BleManagerDisconnectPeripheral', function(a) {
+                console.log("device: ", a, "disconnected");
+                // callback
+                t.succeeded && t.succeeded(a);
+            });
+            // add stop handler
+            agent.addListener('BleManagerStopScan', function() {
+                // setup device container
+                var devices = [];
+                // append discovered device
+                for (var d in scannedDevices) devices.push(scannedDevices[d]);
+                // callback
+                t.succeeded && t.succeeded(devices);
+            });
+            // received data handler
+            agent.addListener('BleManagerDidUpdateValueForCharacteristic', function(response) {
+
+
+
+                /*
+                var receivingBuf = "", receivingTimer = null;
+
+                clearTimeout(receivingTimer);
+                receivingTimer = setTimeout(function() {
+                    receivingTimer = clearTimeout(receivingTimer);
+                    // setup data container
+                    var data = null;
+                    // parse received data
+                    try { data = JSON.parse(receivingBuf) } catch(e) { data = receivingBuf }
+                    // get handler name
+                    var handlerName = [response.peripheral, response.service, response.characteristic].join('.');
+                    // callback
+                    for (var idx in (global.ble.read[handlerName] || [])) global.ble.read[handlerName][idx](data);
+                    // clear buffer
+                    receivingBuf = "";
+                }, 750);
+                // get value
+                var value = (response || {}).value || [];
+                // parse value
+                while (value.length > 0) {
+                    var hex = value.splice(0, 2);
+                    receivingBuf += String.fromCharCode(parseInt(String.fromCharCode(hex[0]) + String.fromCharCode(hex[1]), 16));
+                }
+                */
+
+
+
+            });
+            console.log('[BLE] ready.');
+            // finished
+            bleReady();
+        })
+        // failed
+        .catch(function(e) {
+            // save error
+            err = e;
+            // return error
+            t.failed && t.failed((e || {}).message);
+        }) : bleReady();
     // web socket
     } else if (/^wss?:\/\//i.test(k)) {
 

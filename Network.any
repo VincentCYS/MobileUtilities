@@ -18,7 +18,7 @@ module.exports  = function(g, t) {
         // get splitted path
         var uri = k.substring(6).split('/') || [];
         var args = {};
-        var err = null;
+        var client = null, err = null;
         var scannedDevices = {};
         // setup event handler agent
         var agent = new __rN.NativeEventEmitter(__rN.NativeModules.BleManager);
@@ -139,13 +139,13 @@ module.exports  = function(g, t) {
             }
         };
         // not ready yet?
-        while (typeof global.ble == "undefined" && !err) {
+        while (!client && !err) {
             // setup bluetooth
             BLE.start({ showAlert: !1 })
             // succeeded
             .then(function() {
                 // setup container
-                global.ble = {};
+                client = {};
                 // setup listeners
                 // scanning
                 agent.addListener('BleManagerDiscoverPeripheral', function(device) {

@@ -16,7 +16,7 @@ module.exports  = function(g, t) {
     // bluetooth
     } else if (/^ble:\/\//i.test(k)) {
         // get splitted path
-        var uri = k.substring(6).split('/') || [];
+        var uri = (k.substring(6).split('/') || []).filter(function(u) { return u });
         var args = {};
         var err = null;
         var scannedDevices = {};
@@ -24,9 +24,6 @@ module.exports  = function(g, t) {
         var agent = new __rN.NativeEventEmitter(__rN.NativeModules.BleManager);
         // start handler
         var bleReady = function() {
-
-            console.log('[BLE] uri: ', uri);
-            
             // scan?
             if (!uri.length) {
                 // start scanning devices

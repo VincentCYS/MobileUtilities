@@ -24,6 +24,9 @@ module.exports  = function(g, t) {
         var agent = new __rN.NativeEventEmitter(__rN.NativeModules.BleManager);
         // start handler
         var bleReady = function() {
+
+            console.log('[BLE] uri: ', uri);
+            
             // scan?
             if (!uri.length) {
                 // start scanning devices

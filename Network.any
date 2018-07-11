@@ -71,16 +71,12 @@ module.exports  = function(g, t) {
                     });
                 // the rest
                 } else {
+                    console.log('[BLE] ', deviceId, args);
+                    
                     // connect the device
                     BLE.connect(deviceId)
                     // succeeded
                     .then(function() {
-
-                        console.log('[BLE] ', deviceId, args);
-
-
-
-
 
 
 

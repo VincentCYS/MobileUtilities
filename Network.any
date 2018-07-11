@@ -141,7 +141,7 @@ module.exports  = function(g, t) {
         // not ready yet?
         while (typeof global.ble == "undefined" && !err) {
             // setup bluetooth
-            BLE.start({ showAlert: !1 })
+            BLE.start({ showAlert: !1, restoreIdentifierKey: 'test' })
             // succeeded
             .then(function() {
                 // setup container

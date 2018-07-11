@@ -12,7 +12,7 @@ module.exports  = function(g, t) {
     // invalid format
     if (!k.length || !/^[a-z0-9_-]+:(\/\/)?/i.test(k)) {
         // return error
-        t.failed && t.failed("Required address is invalid.");
+        t.failed && t.failed('Required address is invalid.');
     // bluetooth
     } else if (/^ble:\/\//i.test(k)) {
         // get splitted path
@@ -57,15 +57,18 @@ module.exports  = function(g, t) {
                 // disconnect
                 } else if (/^delete$/i.test(g.method)) {
                     // disconnect targeted device
-                    BLE.disconnect(deviceId).then(function() {
+                    BLE.disconnect(deviceId)
+                    // finished
+                    .then(function() {
 
                         // Success code
                         console.log('[BLE] disconnection performed');
 
                         // add handler
-
+                    
+                    })
                     // failed
-                    }).catch(function(e) {
+                    .catch(function(e) {
                         // return error
                         t.failed && t.failed((e || {}).message);
                     });
@@ -80,12 +83,14 @@ module.exports  = function(g, t) {
                     // get device services
                     .then(function() {
                         return BLE.retrieveServices(deviceId);
+                    })
                     // connected
-                    }).then(function() {
+                    .then(function() {
                         // start notification for listen receiving data
                         return BLE.startNotification(deviceId, args.services, args.characteristics);
+                    })
                     // connected
-                    }).then(function() {
+                    .then(function() {
                         // write data
                         if (/^(post|put)$/i.test(g.method)) {
                             // setup form data container
@@ -96,25 +101,23 @@ module.exports  = function(g, t) {
                                 body = body.concat([f]);
                             }
                             // no response needed
-                            BLE.writeWithoutResponse(deviceId, args.services, args.characteristics, body).then(function() {
+                            BLE.writeWithoutResponse(deviceId, args.services, args.characteristics, body)
+                            // finished
+                            .then(function() {
                                 t.succeeded && t.succeeded();
-                            }).catch(function(b) {
-                                t.failed && t.failed(b);
+                            })
+                            // failed
+                            .catch(function(e) {
+                                t.failed && t.failed((e || {}).message);
                             });
                         // read data
                         } else {
-                            
-                            __rN.AlertIOS.alert(deviceId, JSON.stringify(args));
-
-                            /*
                             // get handler name
                             var handlerName = [deviceId, args.services, args.characteristics].join('.');
                             // setup handler container
                             global.ble.read[handlerName] = global.ble.read[handlerName] || [];
                             // register the handler
                             global.ble.read[handlerName].push(t.succeeded);
-                            */
-
                         }
                     // error occurred
                     }).catch(function(e) {
@@ -133,7 +136,7 @@ module.exports  = function(g, t) {
             // succeeded
             .then(function() {
                 // setup container
-                global.ble = { discovered: [] };
+                global.ble = { discovered: [], read: {} };
                 // setup listeners
                 // scanning
                 agent.addListener('BleManagerDiscoverPeripheral', function(device) {
@@ -144,25 +147,24 @@ module.exports  = function(g, t) {
                 });
                 // device disconnection handler
                 agent.addListener('BleManagerDisconnectPeripheral', function(a) {
-                    console.log("device: ", a, "disconnected");
+                    console.log('device: ', a, 'disconnected');
                     // callback
                     t.succeeded && t.succeeded(a);
                 });
                 // add stop handler
                 agent.addListener('BleManagerStopScan', function() {
-                    // setup device container
-                    var devices = [];
+                    // setup device container and get handlers
+                    var devices = [], handlers = global.ble.discovered || [];
                     // append discovered device
                     for (var d in scannedDevices) devices.push(scannedDevices[d]);
-                    // get handlers
-                    var handlers = global.ble.discovered || [];
                     // callback
                     for (var i in handlers) handlers[i](devices);
                 });
                 // received data handler
                 agent.addListener('BleManagerDidUpdateValueForCharacteristic', function(response) {
 
-
+                    // Success code
+                    __rN.AlertIOS.alert('', JSON.stringify(response));
 
                     /*
                     var receivingBuf = "", receivingTimer = null;
@@ -181,6 +183,7 @@ module.exports  = function(g, t) {
                         // clear buffer
                         receivingBuf = "";
                     }, 750);
+
                     // get value
                     var value = (response || {}).value || [];
                     // parse value

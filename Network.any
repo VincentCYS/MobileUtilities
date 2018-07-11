@@ -16,29 +16,58 @@ module.exports  = function(g, t) {
     // bluetooth
     } else if (/^ble:\/\//i.test(k)) {
         // get splitted path
-        var uri = k.substring(6).split('/') || [], args = {};
-        // get device id
-        var deviceId = uri.shift();
-        // get args
-        while (uri.length > 0) args[uri.shift()] = uri.shift();
-        /*
-        // setup bluetooth variables
-        var u = new __rN.NativeEventEmitter(__rN.NativeModules.BleManager),
-            v = {},
-            z = function() {
+        var uri = k.substring(6).split('/') || [], args = {}, err = null, scannedDevices = {};
+        // setup event handler agent
+        var agent = new __rN.NativeEventEmitter(__rN.NativeModules.BleManager);
+        // start handler
+        var bleReady = function() {
+            // scan?
+            if (!uri.length) {
+                // start scanning devices
+                BLE.scan([], 5, true)
+                // scan start
+                .then(function() {
+                    // close scanning after 10 seconds
+                    setTimeout(function() {
+                        // stop it
+                        BLE.stopScan();
+                    }, 10000);
+                })
+                // failed
+                .catch(function(e) {
+                    // return error
+                    t.failed && t.failed(e);
+                });
+            } else {
+                // get device id
+                var deviceId = uri.shift();
+                // get args
+                while (uri.length > 0) args[uri.shift()] = uri.shift();
                 // disconnect
                 if (/^delete$/i.test(g.method)) {
                     // disconnect targeted device
-                    BLE.disconnect(deviceId).then(() => {
+                    BLE.disconnect(deviceId).then(function() {
+
                         // Success code
-                        console.log('disconnection performed');
+                        console.log('[BLE] disconnection performed');
+
+                        // add handler
+
                     // failed
-                    }).catch(function(b) {
+                    }).catch(function(e) {
                         // return error
-                        t.failed && t.failed(b);
+                        t.failed && t.failed(e);
                     });
                 // the rest
                 } else {
+
+                    console.log('[BLE] ', deviceId, args);
+
+
+
+
+
+                    /*
                     // make sure the service and characteristic are specified
                     if (typeof args.services == "undefined" || typeof args.characteristics == "undefined") {
                         // return error
@@ -84,72 +113,91 @@ module.exports  = function(g, t) {
                             t.failed && t.failed(b);
                         });
                     }
+                    */
+
+
+
+
+
                 }
-            },
-            x = function() {
-                // no specified device
-                if (!deviceId) {
-                    // start scanning
-                    BLE.scan([], 8, !0);
-                } else {
-                    // connect to specified device
-                    z();
-                }
-            };
-        // start
-        global.ble ? x() : BLE.start({ showAlert: !1 }).then(function() {
-            global.ble = { read: {} };
-            var receivingBuf = "", receivingTimer = null;
-            // device disconnection handler
-            u.addListener("BleManagerDisconnectPeripheral", function(a) {
-                console.log("device: ",a,"disconnected");
-                // callback
-                t.succeeded && t.succeeded(a);
-            });
-            // scanning
-            u.addListener("BleManagerDiscoverPeripheral", function(device) {
-                // setup device
-                device = device || {};
-                // valid device
-                "undefined" != typeof device.name && (v[device.id] = device);
-            });
-            // add stop handler
-            u.addListener("BleManagerStopScan",function() {
-                // setup device container
-                var devices = [];
-                // append discovered device
-                for (var d in v) devices.push(v[d]);
-                // callback
-                t.succeeded && t.succeeded(devices);
-            });
-            // received data handler
-            u.addListener('BleManagerDidUpdateValueForCharacteristic', function(response) {
-                clearTimeout(receivingTimer);
-                receivingTimer = setTimeout(function() {
-                    receivingTimer = clearTimeout(receivingTimer);
-                    // setup data container
-                    var data = null;
-                    // parse received data
-                    try { data = JSON.parse(receivingBuf) } catch(e) { data = receivingBuf }
-                    // get handler name
-                    var handlerName = [response.peripheral, response.service, response.characteristic].join('.');
-                    // callback
-                    for (var idx in (global.ble.read[handlerName] || [])) global.ble.read[handlerName][idx](data);
-                    // clear buffer
-                    receivingBuf = "";
-                }, 750);
-                // get value
-                var value = (response || {}).value || [];
-                // parse value
-                while (value.length > 0) {
-                    var hex = value.splice(0, 2);
-                    receivingBuf += String.fromCharCode(parseInt(String.fromCharCode(hex[0]) + String.fromCharCode(hex[1]), 16));
-                }
-            });
+            }
+        };
+        // not ready yet?
+        while (!global.ble && !err) {
             // setup bluetooth
-            x();
-        });
-        */
+            BLE.start({ showAlert: !1 })
+            // succeeded
+            .then(function() {
+                // setup container
+                global.ble = {};
+                // setup listeners
+                // scanning
+                agent.addListener('BleManagerDiscoverPeripheral', function(device) {
+                    // setup device
+                    device = device || {};
+                    // valid device
+                    if ("undefined" != typeof device.name) scannedDevices[device.id] = device;
+                });
+                // device disconnection handler
+                agent.addListener('BleManagerDisconnectPeripheral', function(a) {
+                    console.log("device: ", a, "disconnected");
+                    // callback
+                    t.succeeded && t.succeeded(a);
+                });
+                // add stop handler
+                agent.addListener('BleManagerStopScan', function() {
+                    // setup device container
+                    var devices = [];
+                    // append discovered device
+                    for (var d in scannedDevices) devices.push(scannedDevices[d]);
+                    // callback
+                    t.succeeded && t.succeeded(devices);
+                });
+                // received data handler
+                agent.addListener('BleManagerDidUpdateValueForCharacteristic', function(response) {
+
+
+
+                    /*
+                    var receivingBuf = "", receivingTimer = null;
+
+                    clearTimeout(receivingTimer);
+                    receivingTimer = setTimeout(function() {
+                        receivingTimer = clearTimeout(receivingTimer);
+                        // setup data container
+                        var data = null;
+                        // parse received data
+                        try { data = JSON.parse(receivingBuf) } catch(e) { data = receivingBuf }
+                        // get handler name
+                        var handlerName = [response.peripheral, response.service, response.characteristic].join('.');
+                        // callback
+                        for (var idx in (global.ble.read[handlerName] || [])) global.ble.read[handlerName][idx](data);
+                        // clear buffer
+                        receivingBuf = "";
+                    }, 750);
+                    // get value
+                    var value = (response || {}).value || [];
+                    // parse value
+                    while (value.length > 0) {
+                        var hex = value.splice(0, 2);
+                        receivingBuf += String.fromCharCode(parseInt(String.fromCharCode(hex[0]) + String.fromCharCode(hex[1]), 16));
+                    }
+                    */
+
+
+
+                });
+                // finished
+                bleReady();
+            })
+            // failed
+            .catch(function(e) {
+                // save error
+                err = e;
+                // return error
+                t.failed && t.failed(e);
+            });
+        }
     // web socket
     } else if (/^wss?:\/\//i.test(k)) {
 
@@ -179,7 +227,6 @@ module.exports  = function(g, t) {
                 t.failed && t.failed((pmErr || {}).message);
             }
         });
-    
     } else if (/^clipboard:\/\//i.test(k)) {
         // get info
         if (/^get$/i.test(g.method)) {

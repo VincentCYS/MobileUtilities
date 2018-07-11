@@ -72,11 +72,13 @@ module.exports  = function(g, t) {
                 // the rest
                 } else {
                     console.log('[BLE] ', deviceId, args);
-                    
+
                     // connect the device
                     BLE.connect(deviceId)
                     // succeeded
                     .then(function() {
+
+                        __rN.AlertIOS.alert(deviceId, JSON.stringify(args));
 
 
 
@@ -127,9 +129,6 @@ module.exports  = function(g, t) {
                             });
                         }
                         */
-                        
-                        
-
 
 
 
@@ -151,9 +150,7 @@ module.exports  = function(g, t) {
             // succeeded
             .then(function() {
                 // setup container
-                global.ble = {
-                    discovered: []
-                };
+                global.ble = { discovered: [] };
                 // setup listeners
                 // scanning
                 agent.addListener('BleManagerDiscoverPeripheral', function(device) {

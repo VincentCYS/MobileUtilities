@@ -177,7 +177,7 @@ module.exports  = function(g, t) {
 
 
                     // Success code
-                    __rN.AlertIOS.alert(global.ble.bufs[response.peripheral], JSON.stringify(value));
+                    __rN.AlertIOS.alert(global.ble.bufs[response.peripheral], JSON.stringify([value, response]));
                 });
                 console.log('[BLE] ready.');
                 // finished

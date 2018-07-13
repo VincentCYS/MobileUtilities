@@ -193,13 +193,13 @@ module.exports  = function(str, data) {
                 // only process math formula
                 if (/[\(\)\+\-\*\/\^%]+/i.test(mq)) {
                     // setup value data container
-                    var value = 0;
+                    var value = null;
                     // clear noise
                     if (/\.$/.test(mq)) mq = mq.substr(0, mq.length - 1);
                     // cal value
-                    try { value = eval(mq) } catch(e) { value = 0 }
+                    try { value = eval(mq) } catch(e) { value = null }
                     // replace variable
-                    expression = expression.replace(mq, value);
+                    if (value != null) expression = expression.replace(mq, value);
                 }
             }
             // get all decimal point queries
@@ -229,8 +229,3 @@ module.exports  = function(str, data) {
     try { result = result || (/^(\{.*\}|\[.*\])$/i.test(str) ? JSON.parse(str) : str) } catch(e) { result = str }
     return result;
 };
-
-
-console.log(module.exports('${id}', {
-    id: '8109DDD5-AB0B-A540-D848-A2422FDDEF88'
-}));

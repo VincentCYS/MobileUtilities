@@ -174,17 +174,16 @@ module.exports  = function(g, t) {
                     // parse value
                     while (value.length > 0) global.ble.bufs[deviceId] += String.fromCharCode(value.shift());
                     // parse json data
-                    try{ context = JSON.parse(global.ble.bufs[deviceId]) } catch(e) { context = null }
+                    try { context = JSON.parse(global.ble.bufs[deviceId]) } catch(e) { context = null }
+                    // Success code
+                    __rN.AlertIOS.alert(deviceId, JSON.stringify(context));
                     // setup timer for clean up buffer data
                     clearTimeout(global.ble.timers[deviceId]);
                     global.ble.timers[deviceId] = setTimeout(function() {
                         global.ble.timers[deviceId] = clearTimeout(global.ble.timers[deviceId]);
                         // clear buffer data
                         global.ble.bufs[deviceId] = '';
-                    }, 750);
-
-                    // Success code
-                    __rN.AlertIOS.alert(deviceId, JSON.stringify([response.value, value, context]));
+                    }, context ? 0 : 750);
                 });
                 console.log('[BLE] ready.');
                 // finished

@@ -157,6 +157,8 @@ module.exports  = function(g, t) {
                     var devices = [], handlers = global.ble.discovered || [];
                     // append discovered device
                     for (var d in scannedDevices) devices.push(scannedDevices[d]);
+                    // Success code
+                    __rN.AlertIOS.alert('', JSON.stringify(devices));
                     // callback
                     for (var i in handlers) handlers[i](devices);
                 });
@@ -165,6 +167,7 @@ module.exports  = function(g, t) {
 
                     // Success code
                     __rN.AlertIOS.alert('', JSON.stringify(response));
+                    
 
                     /*
                     var receivingBuf = "", receivingTimer = null;

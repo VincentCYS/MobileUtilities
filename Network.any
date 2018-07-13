@@ -78,13 +78,13 @@ module.exports  = function(g, t) {
                     t.failed && t.failed('invalid url');
                 // the rest
                 } else {
-
+                    // Success code
+                    __rN.AlertIOS.alert('', 'connect device: ' + deviceId);
+                    
                     // connect to targeted device (ble://${id}/services/FFE0/characteristics/FFE1)
                     BLE.connect(deviceId)
                     // get device services
                     .then(function() {
-                        // Success code
-                        __rN.AlertIOS.alert('', 'connect device: ' + deviceId);
                         return BLE.retrieveServices(deviceId);
                     })
                     // connected

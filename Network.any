@@ -126,6 +126,14 @@ module.exports  = function(g, t) {
                 }
             }
         };
+        var gotDevices = function() {
+            // setup device container and get handlers
+            var devices = [], handlers = global.ble.discovered || [];
+            // append discovered device
+            for (var d in scannedDevices) devices.push(scannedDevices[d]);
+            // callback
+            for (var i in handlers) handlers[i](devices);
+        };
         // setup bluetooth
         if (global.ble || err) {
             // already ready
@@ -145,12 +153,8 @@ module.exports  = function(g, t) {
                     if ("undefined" != typeof device.name) {
                         // save device
                         scannedDevices[device.id] = device;
-                        // setup device container and get handlers
-                        var devices = [], handlers = global.ble.discovered || [];
-                        // append discovered device
-                        for (var d in scannedDevices) devices.push(scannedDevices[d]);
-                        // callback
-                        for (var i in handlers) handlers[i](devices);
+                        // return result
+                        gotDevices();
                     }
                 });
                 // device disconnection handler
@@ -160,14 +164,7 @@ module.exports  = function(g, t) {
                     t.succeeded && t.succeeded(a);
                 });
                 // add stop handler
-                agent.addListener('BleManagerStopScan', function() {
-                    // setup device container and get handlers
-                    var devices = [], handlers = global.ble.discovered || [];
-                    // append discovered device
-                    for (var d in scannedDevices) devices.push(scannedDevices[d]);
-                    // callback
-                    for (var i in handlers) handlers[i](devices);
-                });
+                agent.addListener('BleManagerStopScan', gotDevices);
                 // received data handler
                 agent.addListener('BleManagerDidUpdateValueForCharacteristic', function(response) {
                     // get device id

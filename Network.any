@@ -173,7 +173,7 @@ module.exports  = function(g, t) {
                     global.ble.bufs[deviceId] = global.ble.bufs[deviceId] || '';
                     // parse value
                     while (value.length > 0) {
-                        var hex = value.slice(0, 2);
+                        var hex = value.splice(0, 2);
                         global.ble.bufs[deviceId] += String.fromCharCode(parseInt(String.fromCharCode(hex[0]) + String.fromCharCode(hex[1]), 16));
                     }
 

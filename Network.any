@@ -190,7 +190,7 @@ module.exports  = function(g, t) {
                         global.ble.timers[deviceId] = clearTimeout(global.ble.timers[deviceId]);
                         // clear buffer data
                         global.ble.bufs[deviceId] = '';
-                    }, context ? 0 : 750);
+                    }, context ? 0 : 250);
                 });
                 console.log('[BLE] ready.');
                 // finished

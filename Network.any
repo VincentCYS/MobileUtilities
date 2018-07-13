@@ -91,6 +91,11 @@ module.exports  = function(g, t) {
                     })
                     // connected
                     .then(function() {
+
+                        // Success code
+                        __rN.AlertIOS.alert('', deviceId + ' connected.');
+
+
                         // write data
                         if (/^(post|put)$/i.test(g.method)) {
                             // setup form data container
@@ -143,7 +148,10 @@ module.exports  = function(g, t) {
                     // setup device
                     device = device || {};
                     // valid device
-                    if ("undefined" != typeof device.name) scannedDevices[device.id] = device;
+                    if ("undefined" != typeof device.name) {
+                        // save device
+                        scannedDevices[device.id] = device;
+                    }
                 });
                 // device disconnection handler
                 agent.addListener('BleManagerDisconnectPeripheral', function(a) {
@@ -157,8 +165,6 @@ module.exports  = function(g, t) {
                     var devices = [], handlers = global.ble.discovered || [];
                     // append discovered device
                     for (var d in scannedDevices) devices.push(scannedDevices[d]);
-                    // Success code
-                    __rN.AlertIOS.alert('', JSON.stringify(devices));
                     // callback
                     for (var i in handlers) handlers[i](devices);
                 });
@@ -168,6 +174,7 @@ module.exports  = function(g, t) {
                     // Success code
                     __rN.AlertIOS.alert('', JSON.stringify(response));
                     
+
 
                     /*
                     var receivingBuf = "", receivingTimer = null;

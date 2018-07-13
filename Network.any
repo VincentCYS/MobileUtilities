@@ -168,13 +168,16 @@ module.exports  = function(g, t) {
                     // get device id
                     var deviceId = response.peripheral;
                     // get value
-                    var value = (response || {}).value || [];
+                    var value = (response || {}).value || [], context = null;
                     // serup buf data container
                     global.ble.bufs[deviceId] = global.ble.bufs[deviceId] || '';
                     // parse value
                     while (value.length > 0) global.ble.bufs[deviceId] += String.fromCharCode(value.shift());
+                    // parse json data
+                    try{ context = JSON.parse(global.ble.bufs[deviceId]) } catch(e) { context = null }
+
                     // Success code
-                    __rN.AlertIOS.alert(deviceId, JSON.stringify([response.value, value, global.ble.bufs[deviceId]]));
+                    __rN.AlertIOS.alert(deviceId, JSON.stringify([response.value, value, context]));
 
 
                     

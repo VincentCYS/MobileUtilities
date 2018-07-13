@@ -171,15 +171,10 @@ module.exports  = function(g, t) {
                     var value = (response || {}).value || [];
                     // serup buf data container
                     global.ble.bufs[deviceId] = global.ble.bufs[deviceId] || '';
-
+                    // parse value
+                    while (value.length > 0) global.ble.bufs[deviceId] += String.fromCharCode(value.shift());
                     // Success code
                     __rN.AlertIOS.alert(deviceId, JSON.stringify([response.value, value, global.ble.bufs[deviceId]]));
-                    
-                    // parse value
-                    while (value.length > 0) {
-                        var hex = value.splice(0, 2);
-                        global.ble.bufs[deviceId] += String.fromCharCode(parseInt(String.fromCharCode(hex[0]) + String.fromCharCode(hex[1]), 16));
-                    }
 
 
                     

@@ -38,7 +38,7 @@ module.exports  = function(g, t) {
                     setTimeout(function() {
                         // stop it
                         BLE.stopScan();
-                    }, 10000);
+                    }, 1000 * 60);
                 })
                 // failed
                 .catch(function(e) {

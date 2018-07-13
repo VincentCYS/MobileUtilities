@@ -136,7 +136,7 @@ module.exports  = function(g, t) {
             // succeeded
             .then(function() {
                 // setup container
-                global.ble = { discovered: [], read: {}, bufs: {} };
+                global.ble = { discovered: [], read: {}, bufs: {}, timers: {} };
                 // setup listeners
                 // scanning
                 agent.addListener('BleManagerDiscoverPeripheral', function(device) {
@@ -175,15 +175,16 @@ module.exports  = function(g, t) {
                     while (value.length > 0) global.ble.bufs[deviceId] += String.fromCharCode(value.shift());
                     // parse json data
                     try{ context = JSON.parse(global.ble.bufs[deviceId]) } catch(e) { context = null }
+                    // setup timer for clean up buffer data
+                    clearTimeout(global.ble.timers[deviceId]);
+                    global.ble.timers[deviceId] = setTimeout(function() {
+                        global.ble.timers[deviceId] = clearTimeout(global.ble.timers[deviceId]);
+                        // clear buffer data
+                        global.ble.bufs[deviceId] = '';
+                    }, 750);
 
                     // Success code
                     __rN.AlertIOS.alert(deviceId, JSON.stringify([response.value, value, context]));
-
-
-                    
-
-
-                    
                 });
                 console.log('[BLE] ready.');
                 // finished

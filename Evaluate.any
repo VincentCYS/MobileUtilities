@@ -229,3 +229,8 @@ module.exports  = function(str, data) {
     try { result = result || (/^(\{.*\}|\[.*\])$/i.test(str) ? JSON.parse(str) : str) } catch(e) { result = str }
     return result;
 };
+
+
+console.log(module.exports('${id}', {
+    id: '8109DDD5-AB0B-A540-D848-A2422FDDEF88'
+}));

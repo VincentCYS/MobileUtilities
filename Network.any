@@ -91,11 +91,6 @@ module.exports  = function(g, t) {
                     })
                     // connected
                     .then(function() {
-
-                        // Success code
-                        __rN.AlertIOS.alert('', deviceId + ' connected.');
-
-
                         // write data
                         if (/^(post|put)$/i.test(g.method)) {
                             // setup form data container
@@ -141,7 +136,7 @@ module.exports  = function(g, t) {
             // succeeded
             .then(function() {
                 // setup container
-                global.ble = { discovered: [], read: {} };
+                global.ble = { discovered: [], read: {}, bufs: {} };
                 // setup listeners
                 // scanning
                 agent.addListener('BleManagerDiscoverPeripheral', function(device) {
@@ -170,41 +165,19 @@ module.exports  = function(g, t) {
                 });
                 // received data handler
                 agent.addListener('BleManagerDidUpdateValueForCharacteristic', function(response) {
-
-                    // Success code
-                    __rN.AlertIOS.alert('', JSON.stringify(response));
-                    
-
-
-                    /*
-                    var receivingBuf = "", receivingTimer = null;
-
-                    clearTimeout(receivingTimer);
-                    receivingTimer = setTimeout(function() {
-                        receivingTimer = clearTimeout(receivingTimer);
-                        // setup data container
-                        var data = null;
-                        // parse received data
-                        try { data = JSON.parse(receivingBuf) } catch(e) { data = receivingBuf }
-                        // get handler name
-                        var handlerName = [response.peripheral, response.service, response.characteristic].join('.');
-                        // callback
-                        for (var idx in (global.ble.read[handlerName] || [])) global.ble.read[handlerName][idx](data);
-                        // clear buffer
-                        receivingBuf = "";
-                    }, 750);
-
+                    // serup buf data container
+                    global.ble.bufs[response.peripheral] = global.ble.bufs[response.peripheral] || '';
                     // get value
                     var value = (response || {}).value || [];
                     // parse value
                     while (value.length > 0) {
                         var hex = value.splice(0, 2);
-                        receivingBuf += String.fromCharCode(parseInt(String.fromCharCode(hex[0]) + String.fromCharCode(hex[1]), 16));
+                        global.ble.bufs[response.peripheral] += String.fromCharCode(parseInt(String.fromCharCode(hex[0]) + String.fromCharCode(hex[1]), 16));
                     }
-                    */
 
 
-
+                    // Success code
+                    __rN.AlertIOS.alert(response.peripheral, global.ble.bufs[response.peripheral]);
                 });
                 console.log('[BLE] ready.');
                 // finished

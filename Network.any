@@ -63,7 +63,6 @@ module.exports  = function(g, t) {
 
                         // Success code
                         console.log('[BLE] disconnection performed');
-
                         // add handler
                     
                     })
@@ -146,6 +145,12 @@ module.exports  = function(g, t) {
                     if ("undefined" != typeof device.name) {
                         // save device
                         scannedDevices[device.id] = device;
+                        // setup device container and get handlers
+                        var devices = [], handlers = global.ble.discovered || [];
+                        // append discovered device
+                        for (var d in scannedDevices) devices.push(scannedDevices[d]);
+                        // callback
+                        for (var i in handlers) handlers[i](devices);
                     }
                 });
                 // device disconnection handler

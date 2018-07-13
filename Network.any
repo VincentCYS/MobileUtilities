@@ -17,8 +17,6 @@ module.exports  = function(g, t) {
     } else if (/^ble:\/\//i.test(k)) {
         // get splitted path
         var uri = (k.substring(6).split('/') || []).filter(function(u) { return u });
-        // Success code
-        __rN.AlertIOS.alert('', 'connect device: ' + JSON.stringify([uri, k]));
         var args = {};
         var err = null;
         var scannedDevices = {};

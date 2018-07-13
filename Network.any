@@ -165,8 +165,12 @@ module.exports  = function(g, t) {
                 });
                 // received data handler
                 agent.addListener('BleManagerDidUpdateValueForCharacteristic', function(response) {
+                    // get device id
+                    var deviceId = response.peripheral;
+                    // get value
+                    var value = (response || {}).value || [];
                     // Success code
-                    __rN.AlertIOS.alert('', JSON.stringify(response));
+                    __rN.AlertIOS.alert(deviceId, JSON.stringify([response.value, value]));
 
 
 

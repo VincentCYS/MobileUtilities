@@ -214,12 +214,22 @@ module.exports  = function(g, t) {
         };
         var ws = global.ws[k].conn;
         ws.onopen = function() {
-            t.succeeded && global.ws[k].handlers.push(t.succeeded);
-            ws.send(g.body);
+            if (/^get$/i.test(g.method)) {
+                global.ws[k].handlers.push(t.succeeded);
+            } else if (/^post$/i.test(g.method)) {
+                var data = null;
+                try { data = JSON.parse(g.body) } catch(err) { data = null }
+                try { if (!data) data = Qs.parse(g.body) } catch(err) { data = null }
+                if (!data) data = {};
+                ws.send(g.body);
+                t.succeeded && t.succeeded(data);
+            }
         };
         ws.onmessage = function(e) {
             var data = null;
-            try { data = JSON.parse(e.data) } catch(err) { data = null } finally { data = data || {} }
+            try { data = JSON.parse(e.data) } catch(err) { data = null }
+            try { if (!data) data = Qs.parse(e.data) } catch(err) { data = null }
+            if (!data) data = {};
             for (var i in (global.ws[k].handlers || [])) global.ws[k].handlers[i](data);
         };
         ws.onerror = function(e) { t.failed && t.failed((e || {}).message); };

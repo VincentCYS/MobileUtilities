@@ -207,7 +207,20 @@ module.exports  = function(g, t) {
         }
     // web socket
     } else if (/^wss?:\/\//i.test(k)) {
-
+        global.ws = global.ws || {};
+        global.ws[k] = global.ws[k] || {
+            conn: new WebSocket(k),
+            handlers: []
+        };
+        var ws = global.ws[k].conn;
+        ws.onopen = function() { ws.send(g.body) };
+        ws.onmessage = function(e) {
+            var data = null;
+            try { data = JSON.parse(e.data) } catch(err) { data = null } finally { data = data || {} }
+            for (var i in (global.ws[k].handlers || [])) global.ws[k].handlers[i](data);
+        };
+        ws.onerror = function(e) { t.failed && t.failed((e || {}).message); };
+        ws.onclose = function() {};
     // contacts
     } else if (/^contacts:\/\//i.test(k)) {
         contacts.checkPermission(function(pmErr, permission) {

@@ -213,7 +213,10 @@ module.exports  = function(g, t) {
             handlers: []
         };
         var ws = global.ws[k].conn;
-        ws.onopen = function() { ws.send(g.body) };
+        ws.onopen = function() {
+            t.succeeded && global.ws[k].handlers.push(t.succeeded);
+            ws.send(g.body);
+        };
         ws.onmessage = function(e) {
             var data = null;
             try { data = JSON.parse(e.data) } catch(err) { data = null } finally { data = data || {} }

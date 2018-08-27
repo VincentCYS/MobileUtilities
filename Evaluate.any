@@ -185,13 +185,13 @@ module.exports  = function(str, data) {
                 }
             }
             // get all math queries
-            var mqs = expression.match(/[^a-z][0-9.\+\-\*\/\^%\(\)]+[^a-z]/ig) || [];
+            var mqs = expression.match(/[a-z0-9.\+\-\*\/\^%\(\)]+/ig) || [];
             // process all math queries
             for (var mqI in mqs) {
                 // get math query
                 var mq = mqs[mqI];
                 // only process math formula
-                if (/[\(\)\+\-\*\/\^%]+/i.test(mq)) {
+                if (/[^a-z]+/i.test(mq)) {
                     // setup value data container
                     var value = null;
                     // clear noise

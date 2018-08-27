@@ -13,7 +13,7 @@ module.exports  = function(g, t) {
     if (!k.length || !/^[a-z0-9_-]+:(\/\/)?/i.test(k)) {
         // return error
         t.failed && t.failed('Required address is invalid.');
-    // bluetooth
+    // bluetooth(done)
     } else if (/^ble:\/\//i.test(k)) {
         // get splitted path
         var uri = (k.substring(6).split('/') || []).filter(function(u) { return u });
@@ -205,7 +205,7 @@ module.exports  = function(g, t) {
                 t.failed && t.failed((e || {}).message);
             });
         }
-    // web socket
+    // web socket(-android)
     } else if (/^wss?:\/\//i.test(k)) {
         global.ws = global.ws || {};
         global.ws[k] = global.ws[k] || {
@@ -234,7 +234,7 @@ module.exports  = function(g, t) {
         };
         ws.onerror = function(e) { t.failed && t.failed((e || {}).message); };
         ws.onclose = function() {};
-    // contacts
+    // contacts(done)
     } else if (/^contacts:\/\//i.test(k)) {
         contacts.checkPermission(function(pmErr, permission) {
             if (permission === 'authorized') {
@@ -260,6 +260,7 @@ module.exports  = function(g, t) {
                 t.failed && t.failed((pmErr || {}).message);
             }
         });
+    // clipboard(done)
     } else if (/^clipboard:\/\//i.test(k)) {
         // get info
         if (/^get$/i.test(g.method)) {
@@ -308,7 +309,7 @@ module.exports  = function(g, t) {
 
 
 
-    // local storage
+    // local storage(done)
     } else if (/^db:\/\//i.test(k)) {
         var appId = 'APP_' + ((global.__project || {}).id || "") + ":";
         // get address
@@ -408,7 +409,7 @@ module.exports  = function(g, t) {
                 }
             }
         });
-    // components
+    // components(done)
     } else if (/^app:\/\//i.test(k)) {
         // get address
         var uri = (k.substring(6) || "").split("/").filter(function(n){return n});
@@ -529,7 +530,7 @@ module.exports  = function(g, t) {
 
             }
         }
-    // http by default
+    // http by default(done)
     } else if (/^https?:\/\//i.test(k)) {
         // remove url from config
         delete g.url;

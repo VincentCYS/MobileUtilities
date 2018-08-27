@@ -191,7 +191,7 @@ module.exports  = function(str, data) {
                 // get math query
                 var mq = mqs[mqI];
                 // only process math formula
-                if (/[^a-z]+/i.test(mq)) {
+                if (/[^a-z]+/i.test(mq) && /[\(\)\+\-\*\/\^%]+/i.test(mq)) {
                     // setup value data container
                     var value = null;
                     // clear noise

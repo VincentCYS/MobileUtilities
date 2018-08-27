@@ -185,7 +185,7 @@ module.exports  = function(str, data) {
                 }
             }
             // get all math queries
-            var mqs = expression.match(/[0-9.\+\-\*\/\^%\(\)]+/ig) || [];
+            var mqs = expression.match(/[^a-z][0-9.\+\-\*\/\^%\(\)]+[^a-z]/ig) || [];
             // process all math queries
             for (var mqI in mqs) {
                 // get math query
